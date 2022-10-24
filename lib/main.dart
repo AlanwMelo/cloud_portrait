@@ -1,7 +1,12 @@
+import 'package:cloud_portrait/data/googleSignIn.dart';
 import 'package:cloud_portrait/presentation/listViewer.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -31,23 +36,34 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+
+  @override
+  void initState() {
+    FirebaseAuth.instance.userChanges().listen((event) {
+      setState(() {});
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(child: ListViewer()),
-            bottomBar(),
-          ],
-        ),
-      ),
-    );
+    return FirebaseAuth.instance.currentUser != null
+        ? Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
+            ),
+            body: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Expanded(child: ListViewer()),
+                  bottomBar(),
+                ],
+              ),
+            ),
+          )
+        : _loginScreen();
   }
 
   bottomBar() {
@@ -101,6 +117,38 @@ class _MyHomePageState extends State<MyHomePage> {
       icon,
       size: 35,
       color: Colors.white.withOpacity(0.9),
+    );
+  }
+
+  _loginScreen() {
+    return Scaffold(
+      backgroundColor: Colors.blue,
+      appBar: AppBar(
+        elevation: 0,
+        centerTitle: true,
+      ),
+      body: Container(
+        child: Center(
+          child: InkWell(
+            onTap: () {
+              MyGoogleSignIn().signInWithGoogle();
+            },
+            child: Card(
+              elevation: 10,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
+              ),
+              child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
+                      color: Colors.white, shape: BoxShape.circle),
+                  height: 150,
+                  width: 150,
+                  child: Image.asset('lib/data/assets/logo-google.png')),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
