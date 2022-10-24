@@ -23,7 +23,7 @@ class _ListViewerState extends State<ListViewer> {
         children: [
           _path(),
           _sortAndViewMode(),
-          _dataViewer(),
+          grid ? gridViewer() : listViewer(),
         ],
       ),
     );
@@ -62,21 +62,29 @@ class _ListViewerState extends State<ListViewer> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           const SizedBox(width: 150, child: Text('Organizar por:')),
-          SizedBox(
-              width: 70,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: const [Icon(Icons.list)],
-              )),
+          _changeViewMode(),
         ],
       ),
     );
   }
 
-  _dataViewer() {
-    bool grid = false;
-
-    return grid ? gridViewer() : listViewer();
+  _changeViewMode() {
+    return InkWell(
+      onTap: () {
+        grid = !grid;
+        setState(() {});
+      },
+      child: SizedBox(
+          width: 70,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              grid
+                  ? const Icon(Icons.list)
+                  : const Icon(Icons.grid_view_rounded),
+            ],
+          )),
+    );
   }
 
   gridViewer() {
@@ -115,7 +123,8 @@ class _ListViewerState extends State<ListViewer> {
                 children: [
                   SizedBox(height: 50, width: 50, child: _listItemImage()),
                   Container(
-                    margin: const EdgeInsets.only(top: 2, bottom: 2, right: 8, left: 8),
+                    margin: const EdgeInsets.only(
+                        top: 2, bottom: 2, right: 8, left: 8),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -160,10 +169,7 @@ class _ListViewerState extends State<ListViewer> {
       child: Text(
         'Modified Date',
         style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 12,
-          color: Colors.black54
-        ),
+            fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54),
       ),
     );
   }
