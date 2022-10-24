@@ -1,16 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_portrait/data/assets/firebaseDocManager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ListViewer extends StatefulWidget {
-  const ListViewer({super.key});
+  final CollectionReference firebasePath;
+
+  const ListViewer({super.key, required this.firebasePath});
 
   @override
   State<StatefulWidget> createState() => _ListViewerState();
 }
 
 class _ListViewerState extends State<ListViewer> {
+  FireBaseDocManager docManager = FireBaseDocManager();
   late double screenWidth;
   bool grid = true;
+  List<ListItem> listItems = [];
+
+  @override
+  void initState() {
+    _loadDocs();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +102,7 @@ class _ListViewerState extends State<ListViewer> {
   gridViewer() {
     return Expanded(
         child: GridView.builder(
-            itemCount: 8,
+            itemCount: listItems.length,
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 200,
                 crossAxisSpacing: 20,
@@ -102,7 +114,7 @@ class _ListViewerState extends State<ListViewer> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _listItemImage(),
-                    _listItemName(),
+                    _listItemName(listItems[index].name!),
                   ],
                 ),
               );
@@ -117,7 +129,7 @@ class _ListViewerState extends State<ListViewer> {
                   height: 1,
                   color: Colors.grey,
                 ),
-            itemCount: 8,
+            itemCount: listItems.length,
             itemBuilder: (BuildContext ctx, index) {
               return Row(
                 children: [
@@ -130,7 +142,7 @@ class _ListViewerState extends State<ListViewer> {
                       children: [
                         Container(
                           color: Colors.red.withOpacity(0),
-                          child: _listItemName(),
+                          child: _listItemName(listItems[index].name!),
                         ),
                         Container(
                           color: Colors.red.withOpacity(0),
@@ -152,25 +164,46 @@ class _ListViewerState extends State<ListViewer> {
     );
   }
 
-  _listItemName() {
-    return const Expanded(
-      child: Text(
-        'Folder/File Name',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: 15,
-        ),
+  _listItemName(String name) {
+    return Text(
+      name,
+      style: const TextStyle(
+        fontWeight: FontWeight.bold,
+        fontSize: 15,
       ),
     );
   }
 
   _listItemModifiedDate() {
-    return const Expanded(
-      child: Text(
-        'Modified Date',
-        style: TextStyle(
-            fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54),
-      ),
+    return const Text(
+      'Modified Date',
+      style: TextStyle(
+          fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54),
     );
   }
+
+  /// Data Processing \/
+  _loadDocs() async {
+    QuerySnapshot result =
+        await docManager.getDocs(collection: widget.firebasePath);
+
+    result.docs.forEach((element) {
+      listItems.add(ListItem(
+          type: 'folder', modified: '', taken: 'taken', name: element.id));
+      setState(() {});
+    });
+  }
+}
+
+class ListItem {
+  final String type;
+  final String? name;
+  final String modified;
+  final String taken;
+
+  ListItem(
+      {required this.type,
+      this.name,
+      required this.modified,
+      required this.taken});
 }

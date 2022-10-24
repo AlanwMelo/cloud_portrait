@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_portrait/data/assets/firebaseDocManager.dart';
 import 'package:cloud_portrait/data/googleSignIn.dart';
 import 'package:cloud_portrait/presentation/listViewer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -36,10 +38,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  FireBaseDocManager fireBaseDocManager = FireBaseDocManager();
+  late CollectionReference collectionReference;
 
   @override
   void initState() {
+    collectionReference = fireBaseDocManager.appUserCollection;
     FirebaseAuth.instance.userChanges().listen((event) {
+      collectionReference = fireBaseDocManager.appUserCollection;
       setState(() {});
     });
     super.initState();
@@ -57,7 +63,10 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  const Expanded(child: ListViewer()),
+                  Expanded(
+                      child: ListViewer(
+                    firebasePath: collectionReference,
+                  )),
                   bottomBar(),
                 ],
               ),
@@ -95,8 +104,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   newButton() {
-    return Container(
-      child: bottomBarIcons(Icons.add),
+    return InkWell(
+      onTap: () {
+        FireBaseDocManager().createDoc(collectionName: 'Alan');
+      },
+      child: Container(
+        child: bottomBarIcons(Icons.add),
+      ),
     );
   }
 
