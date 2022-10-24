@@ -52,7 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bottomBar() {
     return Container(
-      height: 60,
+      height: 50,
       color: Colors.blue,
       width: MediaQuery.of(context).size.width,
       child: Row(

@@ -74,11 +74,7 @@ class _ListViewerState extends State<ListViewer> {
   }
 
   _dataViewer() {
-    bool grid = true;
-
-    listViewer() {
-      return Container();
-    }
+    bool grid = false;
 
     return grid ? gridViewer() : listViewer();
   }
@@ -97,23 +93,78 @@ class _ListViewerState extends State<ListViewer> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(
-                      height: 120,
-                      child: Image.network(
-                          'https://i.pinimg.com/736x/76/03/5c/76035cea6383259ae8136fc2f24c339f.jpg'),
-                    ),
-                    const Expanded(
-                      child: Text(
-                        'Folder/File Name',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
+                    _listItemImage(),
+                    _listItemName(),
                   ],
                 ),
               );
             }));
+  }
+
+  listViewer() {
+    return Expanded(
+        child: ListView.separated(
+            separatorBuilder: (BuildContext context, int index) =>
+                const Divider(
+                  height: 1,
+                  color: Colors.grey,
+                ),
+            itemCount: 8,
+            itemBuilder: (BuildContext ctx, index) {
+              return Row(
+                children: [
+                  SizedBox(height: 50, width: 50, child: _listItemImage()),
+                  Container(
+                    margin: const EdgeInsets.only(top: 2, bottom: 2, right: 8, left: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          color: Colors.red.withOpacity(0),
+                          child: _listItemName(),
+                        ),
+                        Container(
+                          color: Colors.red.withOpacity(0),
+                          child: _listItemModifiedDate(),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              );
+            }));
+  }
+
+  _listItemImage() {
+    return SizedBox(
+      height: 120,
+      child: Image.network(
+          'https://i.pinimg.com/736x/76/03/5c/76035cea6383259ae8136fc2f24c339f.jpg'),
+    );
+  }
+
+  _listItemName() {
+    return const Expanded(
+      child: Text(
+        'Folder/File Name',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 15,
+        ),
+      ),
+    );
+  }
+
+  _listItemModifiedDate() {
+    return const Expanded(
+      child: Text(
+        'Modified Date',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+          color: Colors.black54
+        ),
+      ),
+    );
   }
 }
