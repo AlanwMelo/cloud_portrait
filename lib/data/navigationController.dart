@@ -5,6 +5,8 @@ class NavigationController {
     return documentReference.collection('files');
   }
 
+  /// Se estiver nas pastas de nivel mais alto volta para a raiz
+  /// Se estiver em subpastas sobe um nivel
   backOneLevel({required CollectionReference collectionReference}) {
     CollectionReference? newCollectionPath;
     String path = collectionReference.path;
@@ -17,16 +19,15 @@ class NavigationController {
 
       newCollectionPath =
           FirebaseFirestore.instance.collection(newPath.substring(0, newIndex));
-      return newCollectionPath;
-    }
+    } else {
+      int index = collectionReference.path.lastIndexOf('/files');
+      String newPath =
+          collectionReference.path.replaceFirst('/files', '', index);
+      int newIndex = newPath.lastIndexOf('/files');
 
-    if (collectionReference.path.contains('filesaa')) {
-      print(collectionReference.path);
-      var i = collectionReference.path.lastIndexOf('/files');
-      var a = collectionReference.path.replaceFirst('/files', '', i);
-      print(a);
-      var ii = a.lastIndexOf('/files');
-      print(a.substring(0, ii));
+      newCollectionPath = FirebaseFirestore.instance
+          .collection('${newPath.substring(0, newIndex)}/files');
     }
+    return newCollectionPath;
   }
 }
