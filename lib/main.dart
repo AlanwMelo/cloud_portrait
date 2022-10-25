@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_portrait/data/fileProcessing/fileProcessor.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/googleSignIn.dart';
-import 'package:cloud_portrait/data/myFilePicker.dart';
+import 'package:cloud_portrait/data/fileProcessing/myFilePicker.dart';
 import 'package:cloud_portrait/data/navigationController.dart';
 import 'package:cloud_portrait/presentation/listViewer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -67,7 +70,6 @@ class _MyHomePageState extends State<MyHomePage> {
     /// Ex de pasta raiz: users/cdwnImtdHuOHfgKbNfTwkZPxTo52/collections
     isInRootFolder = '/'.allMatches(collectionReference.path).length == 2;
 
-
     return WillPopScope(
       onWillPop: () => _popScope(),
       child: DocumentReferenceProvider(
@@ -130,6 +132,8 @@ class _MyHomePageState extends State<MyHomePage> {
       onTap: () {
         MyFilePicker(pickedFiles: (filePickerResult) async {
           if (filePickerResult != null) {
+            FileProcessor().generateLocalImageInfo(
+                File(filePickerResult.files.first.path!));
             print(filePickerResult.files.length);
           } else {
             setState(() {});
@@ -212,7 +216,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<bool> _popScope() async {
-
     bool isInUserCollections = collectionReference.path
         .contains(FirebaseAuth.instance.currentUser!.uid);
 
