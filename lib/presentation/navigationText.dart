@@ -1,10 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseUserManager.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class NavigationText extends StatefulWidget {
   final CollectionReference collectionReference;
-  final Function(String) textTapped;
+  final Function(DocumentReference) textTapped;
 
   const NavigationText(
       {super.key, required this.collectionReference, required this.textTapped});
@@ -35,13 +36,16 @@ class _NavigationTextState extends State<NavigationText> {
         scrollDirection: Axis.horizontal,
         itemCount: folders.length,
         itemBuilder: (BuildContext ctx, index) {
-          return Container(
-              margin: const EdgeInsets.only(left: 4, right: 4),
-              child: Center(
-                  child: Text(
-                folders[index],
-                style: const TextStyle(fontSize: 18),
-              )));
+          return InkWell(
+            onTap: ()=> _setFolderToNavigate(index),
+            child: Container(
+                margin: const EdgeInsets.only(left: 4, right: 4),
+                child: Center(
+                    child: Text(
+                  folders[index],
+                  style: const TextStyle(fontSize: 18),
+                ))),
+          );
         },
         separatorBuilder: (BuildContext context, int index) => const Center(
           child: Text(
@@ -65,7 +69,6 @@ class _NavigationTextState extends State<NavigationText> {
 
   getListItems() {
     String path = widget.collectionReference.path;
-    print(path);
     path = path.substring(path.indexOf('collections'));
     List foldersList = path.split('/');
     for (var element in foldersList) {
@@ -74,5 +77,21 @@ class _NavigationTextState extends State<NavigationText> {
       }
     }
     setState(() {});
+  }
+
+  _setFolderToNavigate(int index) {
+    String path = widget.collectionReference.path;
+    if(index == 0){
+      path = '${path.substring(0, path.lastIndexOf('collections'))}collections';
+      widget.textTapped(FirebaseFirestore.instance.collection('users').doc(path.substring(5)));
+    }
+
+
+  /*  print(path);
+    print(path.indexOf(folders[index]));
+    print(folders[index]);
+    print(path.substring(0, 47+folders[index].length));*/
+
+
   }
 }

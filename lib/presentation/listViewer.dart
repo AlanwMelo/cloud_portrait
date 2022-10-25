@@ -59,8 +59,12 @@ class _ListViewerState extends State<ListViewer> {
           width: screenWidth,
           child: NavigationText(
               collectionReference: widget.firebasePath,
-              textTapped: (folderName) {
-                print(folderName);
+              textTapped: (folderPath) {
+                if ('/'.allMatches(folderPath.path).length == 2) {
+                  widget.talkback({'root': folderPath});
+                } else {
+                  widget.talkback({'folder': folderPath});
+                }
               }),
         ),
         underLine(),

@@ -189,12 +189,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void talkbackHandler(Map map) {
-    if (map.containsKey('folder')) {
+    if (map.containsKey('root')) {
+      collectionReference =
+          FirebaseFirestore.instance.collection(map['root'].path);
+    } else if (map.containsKey('folder')) {
       DocumentReference doc = map['folder'];
       collectionReference =
           navigationController.goToFolder(documentReference: doc);
-      setState(() {});
     }
+    setState(() {});
   }
 
   Future<bool> _popScope() async {
