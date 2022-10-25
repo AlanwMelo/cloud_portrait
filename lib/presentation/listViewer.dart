@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_portrait/data/firebaseCollectionManager.dart';
+import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
+import 'package:cloud_portrait/presentation/navigationText.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -44,10 +45,6 @@ class _ListViewerState extends State<ListViewer> {
   }
 
   _path() {
-    text(String text) {
-      return Text(text);
-    }
-
     underLine() {
       return Container(
         height: 1,
@@ -58,10 +55,13 @@ class _ListViewerState extends State<ListViewer> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Container(
+        SizedBox(
           width: screenWidth,
-          padding: const EdgeInsets.all(8),
-          child: text('Path>path>Path'),
+          child: NavigationText(
+              collectionReference: widget.firebasePath,
+              textTapped: (folderName) {
+                print(folderName);
+              }),
         ),
         underLine(),
       ],
@@ -112,7 +112,7 @@ class _ListViewerState extends State<ListViewer> {
             itemBuilder: (BuildContext ctx, index) {
               return InkWell(
                 onTap: () {
-                  widget.talkback({'folder': listItems[index].docPath});
+                  _listTap(index);
                 },
                 child: Container(
                   margin: const EdgeInsets.all(10),
@@ -138,27 +138,30 @@ class _ListViewerState extends State<ListViewer> {
                 ),
             itemCount: listItems.length,
             itemBuilder: (BuildContext ctx, index) {
-              return Row(
-                children: [
-                  SizedBox(height: 50, width: 50, child: _listItemImage()),
-                  Container(
-                    margin: const EdgeInsets.only(
-                        top: 2, bottom: 2, right: 8, left: 8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          color: Colors.red.withOpacity(0),
-                          child: _listItemName(listItems[index].name!),
-                        ),
-                        Container(
-                          color: Colors.red.withOpacity(0),
-                          child: _listItemModifiedDate(),
-                        )
-                      ],
+              return InkWell(
+                onTap: () => _listTap(index),
+                child: Row(
+                  children: [
+                    SizedBox(height: 50, width: 50, child: _listItemImage()),
+                    Container(
+                      margin: const EdgeInsets.only(
+                          top: 2, bottom: 2, right: 8, left: 8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            color: Colors.red.withOpacity(0),
+                            child: _listItemName(listItems[index].name!),
+                          ),
+                          Container(
+                            color: Colors.red.withOpacity(0),
+                            child: _listItemModifiedDate(),
+                          )
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             }));
   }
@@ -203,6 +206,10 @@ class _ListViewerState extends State<ListViewer> {
           docPath: element.reference));
       setState(() {});
     });
+  }
+
+  _listTap(int index) {
+    widget.talkback({'folder': listItems[index].docPath});
   }
 }
 

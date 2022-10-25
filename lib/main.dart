@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_portrait/data/firebaseCollectionManager.dart';
+import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/googleSignIn.dart';
 import 'package:cloud_portrait/data/navigationController.dart';
 import 'package:cloud_portrait/presentation/listViewer.dart';
