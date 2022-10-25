@@ -124,8 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
       onTap: () {
         print(collectionReference.path);
 
-        /*firebaseCollectionManager.createCollection(
-            collectionReference: collectionReference, newFolderName: 'folder');*/
+        firebaseCollectionManager.createCollection(
+            collectionReference: collectionReference, newFolderName: 'folder');
       },
       child: Container(
         child: bottomBarIcons(Icons.add),

@@ -19,13 +19,18 @@ class FireBaseCollectionManager {
   createCollection(
       {required CollectionReference collectionReference,
       required String newFolderName}) async {
+    DocumentReference doc = collectionReference.doc();
     Map<String, dynamic> updated = {'updated': DateTime.now()};
-    Map<String, dynamic> data = {'created': DateTime.now(), 'type': 'folder'};
+    Map<String, dynamic> data = {
+      'created': DateTime.now(),
+      'type': 'folder',
+      'displayName': newFolderName
+    };
 
-    print('Creating collection ${collectionReference.doc(newFolderName)}');
+    print('Creating collection ${collectionReference.doc(doc.id)}');
 
-    await collectionReference.doc(newFolderName).set(updated);
-    await collectionReference.doc(newFolderName).set(data);
+    await collectionReference.doc(doc.id).set(updated);
+    await collectionReference.doc(doc.id).set(data);
     return true;
   }
 
@@ -39,4 +44,6 @@ class FireBaseCollectionManager {
     });*/
     return result;
   }
+
+  getCollectionName({required String}){}
 }

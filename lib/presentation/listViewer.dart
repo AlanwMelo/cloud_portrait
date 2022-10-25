@@ -202,12 +202,15 @@ class _ListViewerState extends State<ListViewer> {
     QuerySnapshot result =
         await docManager.getDocs(collection: widget.firebasePath);
 
-    result.docs.forEach((element) {
+    result.docs.forEach((element)  {
+      Map data = element.data() as Map;
+
+
       listItems.add(ListItem(
           type: 'folder',
           modified: '',
           taken: 'taken',
-          name: element.id,
+          name: data['displayName'],
           docPath: element.reference));
       setState(() {});
     });

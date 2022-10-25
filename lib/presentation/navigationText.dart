@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseUserManager.dart';
 import 'package:flutter/cupertino.dart';
@@ -19,7 +21,7 @@ class _NavigationTextState extends State<NavigationText> {
   FirebaseUserManager firebaseUserManager = FirebaseUserManager();
   String displayName = '';
   String userID = '';
-  List<String> folders = [];
+  List<List<String>> folders = [];
 
   @override
   void initState() {
@@ -44,7 +46,7 @@ class _NavigationTextState extends State<NavigationText> {
                 margin: const EdgeInsets.only(left: 4, right: 4),
                 child: Center(
                     child: Text(
-                  folders[index],
+                  folders[index][1],
                   style: const TextStyle(fontSize: 18),
                 ))),
           );
@@ -65,18 +67,26 @@ class _NavigationTextState extends State<NavigationText> {
     userID = userID.substring(0, userID.indexOf('/'));
 
     displayName = await firebaseUserManager.getUserDisplayName(userID);
-    folders.insert(0, displayName);
+    folders.insert(0, ['', displayName]);
     setState(() {});
     scrollController.jumpTo(scrollController.position.maxScrollExtent);
   }
 
-  getListItems() {
+  getListItems() async {
     String path = widget.collectionReference.path;
     path = path.substring(path.indexOf('collections'));
     List foldersList = path.split('/');
     for (var element in foldersList) {
       if (element != 'files' && element != 'collections') {
-        folders.add(element);
+        String path = widget.collectionReference.path.substring(5);
+
+        DocumentReference doc = FirebaseFirestore.instance
+            .collection('users')
+            .doc('${path.substring(0, path.indexOf(element))}$element');
+
+        DocumentSnapshot docData = await doc.get();
+        Map data = docData.data() as Map;
+        folders.add([element, data['displayName']]);
       }
     }
     setState(() {});
@@ -88,19 +98,10 @@ class _NavigationTextState extends State<NavigationText> {
     if (index == 0) {
       path = '${path.substring(0, path.lastIndexOf('collections'))}collections';
     } else if (index == (folders.length - 1)) {
-      print('last item, don\'t move!');
+      debugPrint('last item, don\'t move!');
     } else {
-      int appearances = 0;
-
-      for (var element in folders) {
-        if (element == folders[index]) {
-          appearances = appearances + 1;
-        }
-      }
-      if (appearances == 1) {
-        path =
-            '${path.substring(0, path.lastIndexOf(folders[index]))}${folders[index]}';
-      } else {}
+      path =
+          '${path.substring(0, path.lastIndexOf(folders[index][0]))}${folders[index][0]}';
     }
     widget.textTapped(
         FirebaseFirestore.instance.collection('users').doc(path.substring(5)));
