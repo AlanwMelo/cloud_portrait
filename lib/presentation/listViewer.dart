@@ -111,9 +111,8 @@ class _ListViewerState extends State<ListViewer> {
         child: GridView.builder(
             itemCount: listItems.length,
             gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                maxCrossAxisExtent: 200,
-                crossAxisSpacing: 20,
-                mainAxisSpacing: 20),
+              maxCrossAxisExtent: 200,
+            ),
             itemBuilder: (BuildContext ctx, index) {
               return InkWell(
                 onTap: () {
@@ -122,10 +121,10 @@ class _ListViewerState extends State<ListViewer> {
                 child: Container(
                   margin: const EdgeInsets.all(10),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
+                    mainAxisSize: MainAxisSize.max,
                     children: [
-                      _listItemImage(),
-                      _listItemName(listItems[index].name!),
+                      _listItemImage(index),
+                      _listItemName(listItems[index].name),
                     ],
                   ),
                 ),
@@ -147,7 +146,8 @@ class _ListViewerState extends State<ListViewer> {
                 onTap: () => _listTap(index),
                 child: Row(
                   children: [
-                    SizedBox(height: 50, width: 50, child: _listItemImage()),
+                    SizedBox(
+                        height: 50, width: 50, child: _listItemImage(index)),
                     Container(
                       margin: const EdgeInsets.only(
                           top: 2, bottom: 2, right: 8, left: 8),
@@ -171,17 +171,33 @@ class _ListViewerState extends State<ListViewer> {
             }));
   }
 
-  _listItemImage() {
-    return SizedBox(
-      height: 120,
-      child: Image.network(
-          'https://i.pinimg.com/736x/76/03/5c/76035cea6383259ae8136fc2f24c339f.jpg'),
-    );
+  _listItemImage(int index) {
+    if (listItems[index].type == 'folder') {
+      return SizedBox(
+        height: 120,
+        child: Image.network(
+          'https://i.pinimg.com/736x/76/03/5c/76035cea6383259ae8136fc2f24c339f.jpg',
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.low,
+        ),
+      );
+    } else if (listItems[index].type == 'file') {
+      return SizedBox(
+        height: 120,
+        width: 500,
+        child: Image.network(
+          listItems[index].linkURL!,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.low,
+        ),
+      );
+    }
   }
 
   _listItemName(String name) {
     return Text(
       name,
+      textAlign: TextAlign.center,
       style: const TextStyle(
         fontWeight: FontWeight.bold,
         fontSize: 15,
@@ -205,13 +221,27 @@ class _ListViewerState extends State<ListViewer> {
     for (var element in result.docs) {
       Map data = element.data() as Map;
 
-      listItems.add(ListItem(
-          type: 'folder',
-          modified: '',
-          taken: 'taken',
+      if (data['type'] == 'folder') {
+        listItems.add(ListItem(
+            type: 'folder',
+            modified: Timestamp.fromMillisecondsSinceEpoch(
+                DateTime.now().millisecondsSinceEpoch),
+            name: data['displayName'],
+            docPath: element.reference,
+            created: Timestamp.fromMillisecondsSinceEpoch(
+                DateTime.now().millisecondsSinceEpoch)));
+      } else {
+        listItems.add(ListItem(
+          type: 'file',
+          created: data['created'],
+          modified: data['modified'],
+          subtype: data['subtype'],
+          fileLocation: data['firestorePath'],
+          linkURL: data['fileURL'],
           name: data['displayName'],
           docPath: element.reference,
-          created: ''));
+        ));
+      }
       setState(() {});
     }
   }
@@ -224,10 +254,11 @@ class _ListViewerState extends State<ListViewer> {
 class ListItem {
   final String name;
   final String type;
-  final String modified;
-  final String created;
-  final String? taken;
+  final Timestamp modified;
+  final Timestamp created;
+  final Timestamp? taken;
   final String? subtype;
+  final String? linkURL;
   final DocumentReference? docPath;
   final String? fileLocation;
 
@@ -237,6 +268,7 @@ class ListItem {
     required this.modified,
     required this.created,
     this.taken,
+    this.linkURL,
     this.subtype,
     this.docPath,
     this.fileLocation,
