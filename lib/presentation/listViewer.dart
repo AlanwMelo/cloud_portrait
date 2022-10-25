@@ -5,8 +5,10 @@ import 'package:flutter/material.dart';
 
 class ListViewer extends StatefulWidget {
   final CollectionReference firebasePath;
+  final Function(Map) talkback;
 
-  const ListViewer({super.key, required this.firebasePath});
+  const ListViewer(
+      {super.key, required this.firebasePath, required this.talkback});
 
   @override
   State<StatefulWidget> createState() => _ListViewerState();
@@ -108,14 +110,19 @@ class _ListViewerState extends State<ListViewer> {
                 crossAxisSpacing: 20,
                 mainAxisSpacing: 20),
             itemBuilder: (BuildContext ctx, index) {
-              return Container(
-                margin: const EdgeInsets.all(10),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    _listItemImage(),
-                    _listItemName(listItems[index].name!),
-                  ],
+              return InkWell(
+                onTap: () {
+                  widget.talkback({'folder': listItems[index].docPath});
+                },
+                child: Container(
+                  margin: const EdgeInsets.all(10),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      _listItemImage(),
+                      _listItemName(listItems[index].name!),
+                    ],
+                  ),
                 ),
               );
             }));
@@ -189,7 +196,11 @@ class _ListViewerState extends State<ListViewer> {
 
     result.docs.forEach((element) {
       listItems.add(ListItem(
-          type: 'folder', modified: '', taken: 'taken', name: element.id));
+          type: 'folder',
+          modified: '',
+          taken: 'taken',
+          name: element.id,
+          docPath: element.reference));
       setState(() {});
     });
   }
@@ -200,10 +211,12 @@ class ListItem {
   final String? name;
   final String modified;
   final String taken;
+  final DocumentReference? docPath;
 
   ListItem(
       {required this.type,
       this.name,
+      this.docPath,
       required this.modified,
       required this.taken});
 }

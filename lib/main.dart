@@ -55,25 +55,37 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return FirebaseAuth.instance.currentUser != null
-        ? Scaffold(
-            appBar: AppBar(
-              title: Text(widget.title),
-            ),
-            body: SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Expanded(
-                      child: ListViewer(
-                    firebasePath: collectionReference,
-                  )),
-                  bottomBar(),
-                ],
-              ),
-            ),
-          )
+        ? _appBody()
         : _loginScreen();
+  }
+
+  _appBody() {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: SizedBox(
+        width: MediaQuery.of(context).size.width,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Expanded(
+                child: ListViewer(
+                  firebasePath: collectionReference,
+                  talkback: (map) {
+                    if (map.containsKey('folder')) {
+                      DocumentReference doc = map['folder'];
+                      collectionReference = doc.collection('files');
+                      print(collectionReference);
+                      setState(() {});
+                    }
+                  },
+                )),
+            bottomBar(),
+          ],
+        ),
+      ),
+    );
   }
 
   bottomBar() {
