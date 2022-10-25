@@ -156,7 +156,7 @@ class _ListViewerState extends State<ListViewer> {
                         children: [
                           Container(
                             color: Colors.red.withOpacity(0),
-                            child: _listItemName(listItems[index].name!),
+                            child: _listItemName(listItems[index].name),
                           ),
                           Container(
                             color: Colors.red.withOpacity(0),
@@ -202,16 +202,16 @@ class _ListViewerState extends State<ListViewer> {
     QuerySnapshot result =
         await docManager.getDocs(collection: widget.firebasePath);
 
-    result.docs.forEach((element)  {
+    result.docs.forEach((element) {
       Map data = element.data() as Map;
-
 
       listItems.add(ListItem(
           type: 'folder',
           modified: '',
           taken: 'taken',
           name: data['displayName'],
-          docPath: element.reference));
+          docPath: element.reference,
+          created: ''));
       setState(() {});
     });
   }
@@ -222,16 +222,23 @@ class _ListViewerState extends State<ListViewer> {
 }
 
 class ListItem {
+  final String name;
   final String type;
-  final String? name;
   final String modified;
-  final String taken;
+  final String created;
+  final String? taken;
+  final String? subtype;
   final DocumentReference? docPath;
+  final String? fileLocation;
 
-  ListItem(
-      {required this.type,
-      this.name,
-      this.docPath,
-      required this.modified,
-      required this.taken});
+  ListItem({
+    required this.name,
+    required this.type,
+    required this.modified,
+    required this.created,
+    this.taken,
+    this.subtype,
+    this.docPath,
+    this.fileLocation,
+  });
 }

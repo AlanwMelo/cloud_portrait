@@ -39,6 +39,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool isInRootFolder = false;
   NavigationController navigationController = NavigationController();
   FireBaseCollectionManager firebaseCollectionManager =
       FireBaseCollectionManager();
@@ -62,6 +63,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   appBody() {
+    /// Ex de pasta raiz: users/cdwnImtdHuOHfgKbNfTwkZPxTo52/collections
+    isInRootFolder = '/'.allMatches(collectionReference.path).length == 2;
+
+
     return WillPopScope(
       onWillPop: () => _popScope(),
       child: DocumentReferenceProvider(
@@ -124,8 +129,8 @@ class _MyHomePageState extends State<MyHomePage> {
       onTap: () {
         print(collectionReference.path);
 
-        firebaseCollectionManager.createCollection(
-            collectionReference: collectionReference, newFolderName: 'folder');
+        /*firebaseCollectionManager.createCollection(
+            collectionReference: collectionReference, newFolderName: 'folder');*/
       },
       child: Container(
         child: bottomBarIcons(Icons.add),
@@ -201,8 +206,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<bool> _popScope() async {
-    /// Ex de pasta raiz: users/cdwnImtdHuOHfgKbNfTwkZPxTo52/collections
-    bool isInRootFolder = '/'.allMatches(collectionReference.path).length == 2;
+
     bool isInUserCollections = collectionReference.path
         .contains(FirebaseAuth.instance.currentUser!.uid);
 
