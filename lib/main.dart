@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_portrait/data/assets/firebaseDocManager.dart';
+import 'package:cloud_portrait/data/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/googleSignIn.dart';
 import 'package:cloud_portrait/presentation/listViewer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,14 +38,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  FireBaseDocManager fireBaseDocManager = FireBaseDocManager();
+  FireBaseCollectionManager firebaseCollectionManager =
+      FireBaseCollectionManager();
   late CollectionReference collectionReference;
 
   @override
   void initState() {
-    collectionReference = fireBaseDocManager.appUserCollection;
-    FirebaseAuth.instance.userChanges().listen((event) {
-      collectionReference = fireBaseDocManager.appUserCollection;
+    collectionReference = firebaseCollectionManager.getUserCollection();
+    FirebaseAuth.instance.userChanges().listen((event) async {
+      collectionReference = firebaseCollectionManager.getUserCollection();
       setState(() {});
     });
     super.initState();
@@ -106,7 +107,11 @@ class _MyHomePageState extends State<MyHomePage> {
   newButton() {
     return InkWell(
       onTap: () {
-        FireBaseDocManager().createDoc(collectionName: 'Alan');
+        firebaseCollectionManager.addFolderToCollection(
+            documentReference: collectionReference.doc('Alan'),
+            newFolderName: 'newFolderName');
+        /*FireBaseCollectionManager().createCollection(
+            newCollectionName: 'Alan', collectionReference: collectionReference);*/
       },
       child: Container(
         child: bottomBarIcons(Icons.add),
@@ -121,8 +126,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   profile() {
-    return Container(
-      child: bottomBarIcons(Icons.account_box_rounded),
+    return InkWell(
+      onTap: () {
+        FirebaseAuth.instance.signOut();
+      },
+      child: Container(
+        child: bottomBarIcons(Icons.account_box_rounded),
+      ),
     );
   }
 

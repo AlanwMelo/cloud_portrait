@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_portrait/data/assets/firebaseDocManager.dart';
+import 'package:cloud_portrait/data/firebaseCollectionManager.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +13,7 @@ class ListViewer extends StatefulWidget {
 }
 
 class _ListViewerState extends State<ListViewer> {
-  FireBaseDocManager docManager = FireBaseDocManager();
+  FireBaseCollectionManager docManager = FireBaseCollectionManager();
   late double screenWidth;
   bool grid = true;
   List<ListItem> listItems = [];
