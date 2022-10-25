@@ -202,7 +202,7 @@ class _ListViewerState extends State<ListViewer> {
     QuerySnapshot result =
         await docManager.getDocs(collection: widget.firebasePath);
 
-    result.docs.forEach((element) {
+    for (var element in result.docs) {
       Map data = element.data() as Map;
 
       listItems.add(ListItem(
@@ -213,7 +213,7 @@ class _ListViewerState extends State<ListViewer> {
           docPath: element.reference,
           created: ''));
       setState(() {});
-    });
+    }
   }
 
   _listTap(int index) {

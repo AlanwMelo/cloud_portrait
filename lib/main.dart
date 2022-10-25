@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/googleSignIn.dart';
+import 'package:cloud_portrait/data/myFilePicker.dart';
 import 'package:cloud_portrait/data/navigationController.dart';
 import 'package:cloud_portrait/presentation/listViewer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -127,8 +128,13 @@ class _MyHomePageState extends State<MyHomePage> {
   newButton() {
     return InkWell(
       onTap: () {
-        print(collectionReference.path);
-
+        MyFilePicker(pickedFiles: (filePickerResult) async {
+          if (filePickerResult != null) {
+            print(filePickerResult.files.length);
+          } else {
+            setState(() {});
+          }
+        }).pickFiles(allowMultiple: true);
         /*firebaseCollectionManager.createCollection(
             collectionReference: collectionReference, newFolderName: 'folder');*/
       },
