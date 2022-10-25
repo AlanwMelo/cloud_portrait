@@ -160,7 +160,7 @@ class _ListViewerState extends State<ListViewer> {
                           ),
                           Container(
                             color: Colors.red.withOpacity(0),
-                            child: _listItemModifiedDate(),
+                            child: _listItemModifiedDate(index),
                           )
                         ],
                       ),
@@ -205,9 +205,11 @@ class _ListViewerState extends State<ListViewer> {
     );
   }
 
-  _listItemModifiedDate() {
-    return const Text(
-      'Modified Date',
+  _listItemModifiedDate(int index) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(listItems[index].modified.millisecondsSinceEpoch);
+
+    return Text(
+      '${date.day}/${date.month}/${date.year} - ${date.hour}:${date.minute}',
       style: TextStyle(
           fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54),
     );
