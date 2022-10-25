@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/googleSignIn.dart';
+import 'package:cloud_portrait/data/navigationController.dart';
 import 'package:cloud_portrait/presentation/listViewer.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -38,6 +39,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  NavigationController navigationController = NavigationController();
   FireBaseCollectionManager firebaseCollectionManager =
       FireBaseCollectionManager();
   late CollectionReference collectionReference;
@@ -60,34 +62,33 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   appBody() {
-    return DocumentReferenceProvider(
-        key: UniqueKey(),
-        collectionReference: collectionReference,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(widget.title),
-          ),
-          body: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Expanded(
-                    child: ListViewer(
-                  firebasePath: collectionReference,
-                  talkback: (map) {
-                    if (map.containsKey('folder')) {
-                      DocumentReference doc = map['folder'];
-                      collectionReference = doc.collection('files');
-                      setState(() {});
-                    }
-                  },
-                )),
-                bottomBar(),
-              ],
+    return WillPopScope(
+      onWillPop: () => _popScope(),
+      child: DocumentReferenceProvider(
+          key: UniqueKey(),
+          collectionReference: collectionReference,
+          child: Scaffold(
+            appBar: AppBar(
+              title: Text(widget.title),
             ),
-          ),
-        ));
+            body: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Expanded(
+                      child: ListViewer(
+                    firebasePath: collectionReference,
+                    talkback: (map) {
+                      talkbackHandler(map);
+                    },
+                  )),
+                  bottomBar(),
+                ],
+              ),
+            ),
+          )),
+    );
   }
 
   bottomBar() {
@@ -121,11 +122,10 @@ class _MyHomePageState extends State<MyHomePage> {
   newButton() {
     return InkWell(
       onTap: () {
-        firebaseCollectionManager.createCollection(
-            collectionReference: collectionReference,
-            newFolderName: 'folder');
-        /*FireBaseCollectionManager().createCollection(
-            newCollectionName: 'Alan', collectionReference: collectionReference);*/
+        print(collectionReference.path);
+
+        /*firebaseCollectionManager.createCollection(
+            collectionReference: collectionReference, newFolderName: 'folder');*/
       },
       child: Container(
         child: bottomBarIcons(Icons.add),
@@ -186,6 +186,30 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  void talkbackHandler(Map map) {
+    if (map.containsKey('folder')) {
+      DocumentReference doc = map['folder'];
+      collectionReference =
+          navigationController.goToFolder(documentReference: doc);
+      setState(() {});
+    }
+  }
+
+  Future<bool> _popScope() async {
+    /// Ex de pasta raiz: users/cdwnImtdHuOHfgKbNfTwkZPxTo52/collections
+    bool isInRootFolder = '/'.allMatches(collectionReference.path).length == 2;
+    bool isInUserCollections = collectionReference.path
+        .contains(FirebaseAuth.instance.currentUser!.uid);
+
+    if (!isInRootFolder) {
+      collectionReference = navigationController.backOneLevel(
+          collectionReference: collectionReference);
+      setState(() {});
+    }
+
+    return false;
   }
 }
 
