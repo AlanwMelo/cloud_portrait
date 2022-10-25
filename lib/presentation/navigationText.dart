@@ -15,6 +15,7 @@ class NavigationText extends StatefulWidget {
 }
 
 class _NavigationTextState extends State<NavigationText> {
+  ScrollController scrollController = ScrollController();
   FirebaseUserManager firebaseUserManager = FirebaseUserManager();
   String displayName = '';
   String userID = '';
@@ -33,11 +34,12 @@ class _NavigationTextState extends State<NavigationText> {
       height: 40,
       width: MediaQuery.of(context).size.width,
       child: ListView.separated(
+        controller: scrollController,
         scrollDirection: Axis.horizontal,
         itemCount: folders.length,
         itemBuilder: (BuildContext ctx, index) {
           return InkWell(
-            onTap: ()=> _setFolderToNavigate(index),
+            onTap: () => _setFolderToNavigate(index),
             child: Container(
                 margin: const EdgeInsets.only(left: 4, right: 4),
                 child: Center(
@@ -65,6 +67,7 @@ class _NavigationTextState extends State<NavigationText> {
     displayName = await firebaseUserManager.getUserDisplayName(userID);
     folders.insert(0, displayName);
     setState(() {});
+    scrollController.jumpTo(scrollController.position.maxScrollExtent);
   }
 
   getListItems() {
@@ -81,17 +84,25 @@ class _NavigationTextState extends State<NavigationText> {
 
   _setFolderToNavigate(int index) {
     String path = widget.collectionReference.path;
-    if(index == 0){
+
+    if (index == 0) {
       path = '${path.substring(0, path.lastIndexOf('collections'))}collections';
-      widget.textTapped(FirebaseFirestore.instance.collection('users').doc(path.substring(5)));
+    } else if (index == (folders.length - 1)) {
+      print('last item, don\'t move!');
+    } else {
+      int appearances = 0;
+
+      for (var element in folders) {
+        if (element == folders[index]) {
+          appearances = appearances + 1;
+        }
+      }
+      if (appearances == 1) {
+        path =
+            '${path.substring(0, path.lastIndexOf(folders[index]))}${folders[index]}';
+      } else {}
     }
-
-
-  /*  print(path);
-    print(path.indexOf(folders[index]));
-    print(folders[index]);
-    print(path.substring(0, 47+folders[index].length));*/
-
-
+    widget.textTapped(
+        FirebaseFirestore.instance.collection('users').doc(path.substring(5)));
   }
 }

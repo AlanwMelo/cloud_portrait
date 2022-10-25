@@ -63,6 +63,7 @@ class _ListViewerState extends State<ListViewer> {
                 if ('/'.allMatches(folderPath.path).length == 2) {
                   widget.talkback({'root': folderPath});
                 } else {
+                  print(folderPath);
                   widget.talkback({'folder': folderPath});
                 }
               }),
