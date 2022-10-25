@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -14,27 +16,18 @@ class FireBaseCollectionManager {
   ///       .collection('users')
   ///       .doc(FirebaseAuth.instance.currentUser?.uid)
   ///       .collection('collections');
-  createCollection(
-      {required CollectionReference collectionReference,
-      required String newCollectionName}) async {
-    Map<String, dynamic> updated = {'updated': DateTime.now()};
-    Map<String, dynamic> data = {'created': DateTime.now(), 'type': 'folder'};
-
-    await collectionReference.doc(newCollectionName).set(updated);
-    await collectionReference.doc(newCollectionName).set(data);
-    return true;
-  }
-
   addFileToCollection() {}
 
-  addFolderToCollection(
-      {required DocumentReference documentReference,
+  createCollection(
+      {required CollectionReference collectionReference,
       required String newFolderName}) async {
     Map<String, dynamic> updated = {'updated': DateTime.now()};
     Map<String, dynamic> data = {'created': DateTime.now(), 'type': 'folder'};
 
-    await documentReference.collection('files').doc(newFolderName).set(updated);
-    await documentReference.collection('files').doc(newFolderName).set(data);
+    print('Creating collection ${collectionReference.doc(newFolderName)}');
+
+    await collectionReference.doc(newFolderName).set(updated);
+    await collectionReference.doc(newFolderName).set(data);
     return true;
   }
 

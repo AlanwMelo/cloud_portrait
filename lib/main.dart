@@ -55,37 +55,39 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return FirebaseAuth.instance.currentUser != null
-        ? _appBody()
-        : _loginScreen();
+        ? appBody()
+        : loginScreen();
   }
 
-  _appBody() {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-                child: ListViewer(
+  appBody() {
+    return DocumentReferenceProvider(
+        key: UniqueKey(),
+        collectionReference: collectionReference,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+          ),
+          body: SizedBox(
+            width: MediaQuery.of(context).size.width,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Expanded(
+                    child: ListViewer(
                   firebasePath: collectionReference,
                   talkback: (map) {
                     if (map.containsKey('folder')) {
                       DocumentReference doc = map['folder'];
                       collectionReference = doc.collection('files');
-                      print(collectionReference);
                       setState(() {});
                     }
                   },
                 )),
-            bottomBar(),
-          ],
-        ),
-      ),
-    );
+                bottomBar(),
+              ],
+            ),
+          ),
+        ));
   }
 
   bottomBar() {
@@ -119,9 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
   newButton() {
     return InkWell(
       onTap: () {
-        firebaseCollectionManager.addFolderToCollection(
-            documentReference: collectionReference.doc('Alan'),
-            newFolderName: 'newFolderName');
+        firebaseCollectionManager.createCollection(
+            collectionReference: collectionReference,
+            newFolderName: 'folder');
         /*FireBaseCollectionManager().createCollection(
             newCollectionName: 'Alan', collectionReference: collectionReference);*/
       },
@@ -156,35 +158,52 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  _loginScreen() {
+  loginScreen() {
     return Scaffold(
       backgroundColor: Colors.blue,
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
       ),
-      body: Container(
-        child: Center(
-          child: InkWell(
-            onTap: () {
-              MyGoogleSignIn().signInWithGoogle();
-            },
-            child: Card(
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                      color: Colors.white, shape: BoxShape.circle),
-                  height: 150,
-                  width: 150,
-                  child: Image.asset('lib/data/assets/logo-google.png')),
+      body: Center(
+        child: InkWell(
+          onTap: () {
+            MyGoogleSignIn().signInWithGoogle();
+          },
+          child: Card(
+            elevation: 10,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100),
             ),
+            child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                    color: Colors.white, shape: BoxShape.circle),
+                height: 150,
+                width: 150,
+                child: Image.asset('lib/data/assets/logo-google.png')),
           ),
         ),
       ),
     );
+  }
+}
+
+class DocumentReferenceProvider extends InheritedWidget {
+  final CollectionReference collectionReference;
+
+  const DocumentReferenceProvider({
+    required Key key,
+    required this.collectionReference,
+    required Widget child,
+  }) : super(key: key, child: child);
+
+  @override
+  bool updateShouldNotify(DocumentReferenceProvider oldWidget) =>
+      collectionReference != oldWidget.collectionReference;
+
+  static DocumentReferenceProvider? of(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<DocumentReferenceProvider>();
   }
 }
