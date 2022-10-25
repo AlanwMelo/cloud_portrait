@@ -16,9 +16,11 @@ dependencies:
   google_sign_in: ^5.4.2
   firebase_auth: ^3.10.0
   cloud_firestore: ^3.4.2
+  firebase_storage: ^10.3.4
   file_picker: ^5.2.2
   exif: ^3.1.2
   flutter_native_image: ^0.0.6+1
+  mime: ^1.0.2
 
 dev_dependencies:
   flutter_test:

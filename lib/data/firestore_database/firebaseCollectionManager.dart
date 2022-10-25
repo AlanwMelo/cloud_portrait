@@ -14,7 +14,29 @@ class FireBaseCollectionManager {
   ///       .collection('users')
   ///       .doc(FirebaseAuth.instance.currentUser?.uid)
   ///       .collection('collections');
-  addFileToCollection() {}
+  addFileToCollection(
+      {required CollectionReference collectionReference,
+      required Map imageInfo,
+      required var urls,
+      required String subtype}) {
+    DocumentReference doc = collectionReference.doc();
+
+    Map<String, dynamic> data = {
+      "type": "file",
+      "displayName": imageInfo['fileName'],
+      "orientation": imageInfo['orientation'],
+      "created": DateTime.now(),
+      "modified": DateTime.now(),
+      "taken": imageInfo['dateTime'],
+      "subtype": subtype,
+      "specialIMG": imageInfo['specialIMG'],
+      "docPath": doc.path,
+      "firestorePath": urls[1],
+      "fileURL": urls[0],
+    };
+
+    doc.set(data);
+  }
 
   createCollection(
       {required CollectionReference collectionReference,
@@ -45,5 +67,5 @@ class FireBaseCollectionManager {
     return result;
   }
 
-  getCollectionName({required String}){}
+  getCollectionName({required String}) {}
 }

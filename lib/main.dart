@@ -2,11 +2,13 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/fileProcessing/fileProcessor.dart';
+import 'package:cloud_portrait/data/fileProcessing/fileUploader.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/googleSignIn.dart';
 import 'package:cloud_portrait/data/fileProcessing/myFilePicker.dart';
 import 'package:cloud_portrait/data/navigationController.dart';
 import 'package:cloud_portrait/presentation/listViewer.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -45,6 +47,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool isInRootFolder = false;
   NavigationController navigationController = NavigationController();
+  FileUploader fileUploader = FileUploader();
   FireBaseCollectionManager firebaseCollectionManager =
       FireBaseCollectionManager();
   late CollectionReference collectionReference;
@@ -130,15 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
   newButton() {
     return InkWell(
       onTap: () {
-        MyFilePicker(pickedFiles: (filePickerResult) async {
-          if (filePickerResult != null) {
-            FileProcessor().generateLocalImageInfo(
-                File(filePickerResult.files.first.path!));
-            print(filePickerResult.files.length);
-          } else {
-            setState(() {});
-          }
-        }).pickFiles(allowMultiple: true);
+        loadFiles();
         /*firebaseCollectionManager.createCollection(
             collectionReference: collectionReference, newFolderName: 'folder');*/
       },
@@ -226,6 +221,19 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     return false;
+  }
+
+  loadFiles() {
+    MyFilePicker(pickedFiles: (filePickerResult) async {
+      if (filePickerResult != null) {
+        await fileUploader.uploadFiles(
+            files: filePickerResult.files,
+            collectionReference: collectionReference);
+        FilePicker.platform.clearTemporaryFiles();
+      } else {
+        setState(() {});
+      }
+    }).pickFiles(allowMultiple: true);
   }
 }
 

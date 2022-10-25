@@ -74,12 +74,14 @@ class FileProcessor {
 
       String fileName =
           (thisFile.path.substring(thisFile.path.lastIndexOf('/') + 1));
+      Map result = {
+        "fileName": fileName,
+        "specialIMG": specialIMG,
+        "orientation": orientation,
+        "dateTime": dateTime,
+      };
 
-
-      print(fileName);
-      print(specialIMG);
-      print(orientation);
-      print(dateTime);
+      return result;
     } catch (e) {
       log(e.toString());
     }
