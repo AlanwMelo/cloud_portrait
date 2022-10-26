@@ -53,7 +53,7 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
           carouselController: controller,
           options: CarouselOptions(
               onPageChanged: (index, reason) => currentIndex = index,
-              height: 400.0,
+              height: MediaQuery.of(context).size.height,
               enableInfiniteScroll: false,
               viewportFraction: 1),
           items: playListItems.map((item) {

@@ -28,6 +28,7 @@ dependencies:
   wakelock: ^0.6.2
   visibility_detector: ^0.3.3
   video_player: ^2.4.7
+  panorama: ^0.4.1
 
 dev_dependencies:
   flutter_test:

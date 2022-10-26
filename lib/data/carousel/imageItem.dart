@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_portrait/presentation/listViewer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:panorama/panorama.dart';
 
 class ImageItem extends StatefulWidget {
   final ListItem item;
@@ -16,10 +17,14 @@ class ImageItem extends StatefulWidget {
 
 class _ImageItemState extends State<ImageItem> {
   late Timer timer;
+  late Duration duration;
 
   @override
   void initState() {
-    timer = Timer.periodic(const Duration(minutes: 1), (timer) {
+    widget.item.specialIMG
+        ? duration = const Duration(minutes: 2)
+        : const Duration(minutes: 1);
+    timer = Timer.periodic(duration, (timer) {
       widget.canChange(true);
     });
     super.initState();
@@ -33,10 +38,11 @@ class _ImageItemState extends State<ImageItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: widget.item.specialIMG
-          ? Container()
-          : Image.network(widget.item.linkURL!),
-    );
+    return widget.item.specialIMG
+        ? Panorama(
+            animSpeed: 1,
+            child: Image.network(widget.item.linkURL!),
+          )
+        : Image.network(widget.item.linkURL!);
   }
 }
