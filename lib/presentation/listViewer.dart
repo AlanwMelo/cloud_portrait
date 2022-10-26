@@ -8,9 +8,13 @@ import 'package:flutter/material.dart';
 class ListViewer extends StatefulWidget {
   final CollectionReference firebasePath;
   final Function(Map) talkback;
+  final Function(List<ListItem>) openList;
 
   const ListViewer(
-      {super.key, required this.firebasePath, required this.talkback});
+      {super.key,
+      required this.firebasePath,
+      required this.talkback,
+      required this.openList});
 
   @override
   State<StatefulWidget> createState() => _ListViewerState();
@@ -306,7 +310,7 @@ class _ListViewerState extends State<ListViewer> {
             docPath: element.reference,
             created: data['created']));
       } else if (data['subtype'] == 'image') {
-        if(data['specialIMG']){
+        if (data['specialIMG']) {
           listItems.add(ListItem(
             type: 'file',
             created: data['created'],
@@ -318,7 +322,7 @@ class _ListViewerState extends State<ListViewer> {
             docPath: element.reference,
             specialIMG: data['specialIMG'],
           ));
-        }else{
+        } else {
           listItems.add(ListItem(
             type: 'file',
             created: data['created'],
@@ -369,6 +373,7 @@ class _ListViewerState extends State<ListViewer> {
       listItems = listSorter.sortByCreatedDate(
           list: listItems, separatedByType: sortByType);
     }
+    widget.openList(listItems);
     _setStater();
   }
 
@@ -392,17 +397,16 @@ class ListItem {
   final String? fileLocation;
   final bool specialIMG;
 
-  ListItem({
-    required this.name,
-    required this.type,
-    required this.modified,
-    required this.created,
-    this.taken,
-    this.linkURL,
-    this.thumbnailURL,
-    this.subtype,
-    this.docPath,
-    this.fileLocation,
-    this.specialIMG = false
-  });
+  ListItem(
+      {required this.name,
+      required this.type,
+      required this.modified,
+      required this.created,
+      this.taken,
+      this.linkURL,
+      this.thumbnailURL,
+      this.subtype,
+      this.docPath,
+      this.fileLocation,
+      this.specialIMG = false});
 }

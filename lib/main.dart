@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_portrait/data/carousel_slider.dart';
 import 'package:cloud_portrait/data/fileProcessing/fileUploader.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/googleSignIn.dart';
@@ -44,6 +45,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool isInRootFolder = false;
+  List<ListItem> openList = [];
   TextEditingController textEditingController = TextEditingController();
   NavigationController navigationController = NavigationController();
   FileUploader fileUploader = FileUploader();
@@ -92,6 +94,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     firebasePath: collectionReference,
                     talkback: (map) {
                       talkbackHandler(map);
+                    },
+                    openList: (result) {
+                      openList = result;
                     },
                   )),
                   bottomBar(),
@@ -159,10 +164,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ],
               );
             });
-        /*firebaseCollectionManager.createCollection(
-            collectionReference: collectionReference, newFolderName: 'folder');*/
       },
-      onLongPress: () {},
+      onLongPress: () {
+        loadFiles();
+      },
       child: Container(
         child: bottomBarIcons(Icons.add),
       ),
@@ -170,8 +175,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   goToPresentation() {
-    return Container(
-      child: bottomBarIcons(Icons.playlist_play_rounded),
+    return InkWell(
+      onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => PortraitCarousel(
+                    playlist: openList,
+                  ))),
+      child: Container(
+        child: bottomBarIcons(Icons.playlist_play_rounded),
+      ),
     );
   }
 
@@ -256,6 +269,7 @@ class _MyHomePageState extends State<MyHomePage> {
             files: filePickerResult.files,
             collectionReference: collectionReference);
         FilePicker.platform.clearTemporaryFiles();
+        setState(() {});
       } else {
         setState(() {});
       }

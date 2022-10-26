@@ -62,8 +62,8 @@ class FireBaseCollectionManager {
     return true;
   }
 
-  getDocs({required CollectionReference collection}) async {
-    QuerySnapshot result = await collection.get();
+  getDocs({required CollectionReference? collection}) async {
+    QuerySnapshot? result = await collection?.get();
 
     return result;
   }

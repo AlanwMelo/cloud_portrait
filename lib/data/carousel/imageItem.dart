@@ -17,16 +17,14 @@ class ImageItem extends StatefulWidget {
 
 class _ImageItemState extends State<ImageItem> {
   late Timer timer;
-  late Duration duration;
+  late Duration duration = Duration(minutes: 2);
 
   @override
   void initState() {
-    widget.item.specialIMG
-        ? duration = const Duration(minutes: 2)
-        : const Duration(minutes: 1);
     timer = Timer.periodic(duration, (timer) {
       widget.canChange(true);
     });
+
     super.initState();
   }
 
