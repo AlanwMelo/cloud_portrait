@@ -2,10 +2,12 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:exif/exif.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
+import 'package:flutter_video_info/flutter_video_info.dart';
 
 class FileProcessor {
-  generateLocalImageInfo(File thisFile) async {
+  generateImageInfo(File thisFile) async {
     try {
       String specialIMG = 'false';
       String orientation = 'portrait';
@@ -86,6 +88,43 @@ class FileProcessor {
       log(e.toString());
     }
 
+    return true;
+  }
+
+  generateLocalVideoInfo(File thisFile) async {
+    Duration duration = const Duration(milliseconds: 500);
+
+    try {
+      debugPrint('Generating video info for video: ${thisFile.path}');
+
+      final videoInfo = FlutterVideoInfo();
+      String videoLength = '';
+      String fileOrientation;
+
+      await Future.delayed(duration);
+      var info = await videoInfo.getVideoInfo(thisFile.path);
+
+      int videoAux = info!.duration.toString().indexOf('.');
+      videoLength = info.duration.toString().substring(0, videoAux);
+
+      fileOrientation = _getFileOrientation(info.orientation);
+
+      await Future.delayed(duration);
+
+      DateTime date = DateTime.parse(info.date!);
+
+      log('Info generated for video: ${thisFile.path}');
+      Map result = {
+        "fileName": info.title,
+        "videoLength": videoLength,
+        "orientation": fileOrientation,
+        "dateTime": date,
+      };
+
+      return result;
+    } catch (e) {
+      log(e.toString());
+    }
     return true;
   }
 

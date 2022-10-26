@@ -160,7 +160,7 @@ class _ListViewerState extends State<ListViewer> {
                           ),
                           Container(
                             color: Colors.red.withOpacity(0),
-                            child: _listItemModifiedDate(index),
+                            child: _listItemCreatedDate(index),
                           )
                         ],
                       ),
@@ -205,12 +205,13 @@ class _ListViewerState extends State<ListViewer> {
     );
   }
 
-  _listItemModifiedDate(int index) {
-    DateTime date = DateTime.fromMillisecondsSinceEpoch(listItems[index].modified.millisecondsSinceEpoch);
+  _listItemCreatedDate(int index) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(
+        listItems[index].created.millisecondsSinceEpoch);
 
     return Text(
       '${date.day}/${date.month}/${date.year} - ${date.hour}:${date.minute}',
-      style: TextStyle(
+      style: const TextStyle(
           fontWeight: FontWeight.bold, fontSize: 12, color: Colors.black54),
     );
   }
@@ -232,7 +233,7 @@ class _ListViewerState extends State<ListViewer> {
             docPath: element.reference,
             created: Timestamp.fromMillisecondsSinceEpoch(
                 DateTime.now().millisecondsSinceEpoch)));
-      } else {
+      } else if (data['subtype'] == 'image') {
         listItems.add(ListItem(
           type: 'file',
           created: data['created'],
@@ -243,6 +244,19 @@ class _ListViewerState extends State<ListViewer> {
           name: data['displayName'],
           docPath: element.reference,
         ));
+      } else {
+        {
+          listItems.add(ListItem(
+            type: 'file',
+            created: data['created'],
+            modified: data['modified'],
+            subtype: data['subtype'],
+            fileLocation: data['firestorePath'],
+            linkURL: data['fileURL'],
+            name: data['displayName'],
+            docPath: element.reference,
+          ));
+        }
       }
       setState(() {});
     }

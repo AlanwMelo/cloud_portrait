@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 class FirestoreManager {
   final Reference _storageRef = FirebaseStorage.instance.ref();
 
-  uploadImageAndGetURL(
+  uploadFileAndGetURL(
       {required String imagePath, required String firestorePath}) async {
     List<String> result = [];
     // firestorePath example: 'users/cdwnImtdHuOHfgKbNfTwkZPxTo52/collections/PvSFNRwgTa6a1iwkTL2q/files'

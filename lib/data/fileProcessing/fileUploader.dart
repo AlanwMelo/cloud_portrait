@@ -18,19 +18,34 @@ class FileUploader {
       required CollectionReference collectionReference}) async {
     for (var file in files) {
       if (lookupMimeType(file.path!).toString().contains('image')) {
-        Map fileInfo =
-            await fileProcessor.generateLocalImageInfo(File(file.path!));
-        var imgURL = await firestoreManager.uploadImageAndGetURL(
-            imagePath: file.path!, firestorePath: '${collectionReference.path}/${fileInfo['fileName']}');
+        Map fileInfo = await fileProcessor.generateImageInfo(File(file.path!));
+        var imgURL = await firestoreManager.uploadFileAndGetURL(
+            imagePath: file.path!,
+            firestorePath:
+                '${collectionReference.path}/${fileInfo['fileName']}');
 
         await fireBaseCollectionManager.addFileToCollection(
             collectionReference: collectionReference,
             imageInfo: fileInfo,
             subtype: 'image',
             urls: imgURL);
+      } else if (lookupMimeType(file.path!).toString().contains('video')) {
+        Map fileInfo =
+            await fileProcessor.generateLocalVideoInfo(File(file.path!));
 
+        print(fileInfo);
 
-      } else if (lookupMimeType(file.path!).toString().contains('video')) {}
+        var videoURL = await firestoreManager.uploadFileAndGetURL(
+            imagePath: file.path!,
+            firestorePath:
+                '${collectionReference.path}/${fileInfo['fileName']}');
+
+        await fireBaseCollectionManager.addFileToCollection(
+            collectionReference: collectionReference,
+            imageInfo: fileInfo,
+            subtype: 'video',
+            urls: videoURL);
+      }
     }
 
     return true;

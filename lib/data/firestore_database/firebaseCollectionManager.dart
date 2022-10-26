@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 
 class FireBaseCollectionManager {
   getUserCollection() {
@@ -21,11 +22,13 @@ class FireBaseCollectionManager {
       required String subtype}) {
     DocumentReference doc = collectionReference.doc();
 
+
+    print(imageInfo['dateTime']);
     Map<String, dynamic> data = {
       "type": "file",
       "displayName": imageInfo['fileName'],
       "orientation": imageInfo['orientation'],
-      "created": DateTime.now(),
+      "created": imageInfo['dateTime'],
       "modified": DateTime.now(),
       "taken": imageInfo['dateTime'],
       "subtype": subtype,
@@ -49,7 +52,7 @@ class FireBaseCollectionManager {
       'displayName': newFolderName
     };
 
-    print('Creating collection ${collectionReference.doc(doc.id)}');
+    debugPrint('Creating collection ${collectionReference.doc(doc.id)}');
 
     await collectionReference.doc(doc.id).set(updated);
     await collectionReference.doc(doc.id).set(data);
