@@ -26,6 +26,7 @@ dependencies:
   permission_handler: ^10.2.0
   carousel_slider: ^4.1.1
   wakelock: ^0.6.2
+  visibility_detector: ^0.3.3
 
 dev_dependencies:
   flutter_test:
