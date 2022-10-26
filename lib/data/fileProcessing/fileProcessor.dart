@@ -10,7 +10,7 @@ import 'package:video_compress/video_compress.dart';
 class FileProcessor {
   generateImageInfo(File thisFile) async {
     try {
-      String specialIMG = 'false';
+      bool specialIMG = false;
       String orientation = 'portrait';
       DateTime dateTime = DateTime.fromMillisecondsSinceEpoch(0);
 
@@ -45,7 +45,7 @@ class FileProcessor {
 
             /// Panoramic and 360 images have the double width compared of it's height
             if ((width / 2) >= height) {
-              specialIMG = 'true';
+              specialIMG = true;
             }
           }
 
@@ -66,7 +66,7 @@ class FileProcessor {
               await FlutterNativeImage.getImageProperties(thisFile.path);
 
           if ((properties.width! / 2) >= properties.height!) {
-            specialIMG = 'true';
+            specialIMG = true;
           } else if (properties.width! > properties.height!) {
             orientation = 'landscape';
           }

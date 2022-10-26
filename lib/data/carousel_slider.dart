@@ -110,7 +110,9 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
     if (item.subtype == 'image') {
       return ImageItem(
         item: item,
-        canChange: (result) {},
+        canChange: (result) {
+          _nextFile(result);
+        },
       );
     } else {
       return VideoItem(

@@ -306,16 +306,30 @@ class _ListViewerState extends State<ListViewer> {
             docPath: element.reference,
             created: data['created']));
       } else if (data['subtype'] == 'image') {
-        listItems.add(ListItem(
-          type: 'file',
-          created: data['created'],
-          modified: data['modified'],
-          subtype: data['subtype'],
-          fileLocation: data['firestorePath'],
-          linkURL: data['fileURL'],
-          name: data['displayName'],
-          docPath: element.reference,
-        ));
+        if(data['specialIMG']){
+          listItems.add(ListItem(
+            type: 'file',
+            created: data['created'],
+            modified: data['modified'],
+            subtype: data['subtype'],
+            fileLocation: data['firestorePath'],
+            linkURL: data['fileURL'],
+            name: data['displayName'],
+            docPath: element.reference,
+            specialIMG: data['specialIMG'],
+          ));
+        }else{
+          listItems.add(ListItem(
+            type: 'file',
+            created: data['created'],
+            modified: data['modified'],
+            subtype: data['subtype'],
+            fileLocation: data['firestorePath'],
+            linkURL: data['fileURL'],
+            name: data['displayName'],
+            docPath: element.reference,
+          ));
+        }
       } else {
         listItems.add(ListItem(
             type: 'file',
@@ -376,6 +390,7 @@ class ListItem {
   final String? thumbnailURL;
   final DocumentReference? docPath;
   final String? fileLocation;
+  final bool specialIMG;
 
   ListItem({
     required this.name,
@@ -388,5 +403,6 @@ class ListItem {
     this.subtype,
     this.docPath,
     this.fileLocation,
+    this.specialIMG = false
   });
 }
