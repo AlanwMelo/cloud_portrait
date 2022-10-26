@@ -18,6 +18,8 @@ class PortraitCarousel extends StatefulWidget {
 }
 
 class _PortraitCarouselState extends State<PortraitCarousel> {
+  CarouselController controller = CarouselController();
+  int currentIndex = 0;
   List<ListItem> playListItems = [];
 
   @override
@@ -48,8 +50,12 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: CarouselSlider(
+          carouselController: controller,
           options: CarouselOptions(
-              height: 400.0, enableInfiniteScroll: false, viewportFraction: 1),
+              onPageChanged: (index, reason) => currentIndex = index,
+              height: 400.0,
+              enableInfiniteScroll: false,
+              viewportFraction: 1),
           items: playListItems.map((item) {
             return Builder(
               builder: (BuildContext context) {
@@ -107,7 +113,21 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
         canChange: (result) {},
       );
     } else {
-      return VideoItem(item: item, canChange: (result) {});
+      return VideoItem(
+          item: item,
+          canChange: (result) {
+            _nextFile(result);
+          });
+    }
+  }
+
+  _nextFile(bool result) {
+    if (result) {
+      if (currentIndex == (playListItems.length - 1)) {
+        controller.previousPage();
+      } else {
+        controller.nextPage();
+      }
     }
   }
 }

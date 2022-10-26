@@ -13,6 +13,14 @@ class ImageItem extends StatefulWidget {
 }
 
 class _ImageItemState extends State<ImageItem> {
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(

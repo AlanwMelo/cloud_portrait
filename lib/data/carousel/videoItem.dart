@@ -14,6 +14,7 @@ class VideoItem extends StatefulWidget {
 }
 
 class _VideoItemState extends State<VideoItem> {
+  bool startPlaying = false;
   late VideoPlayerController _controller;
 
   @override
@@ -22,6 +23,7 @@ class _VideoItemState extends State<VideoItem> {
     _controller = VideoPlayerController.network(widget.item.linkURL!)
       ..initialize().then((_) {
         _controller.play();
+        startPlaying = true;
         setState(() {});
 
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
@@ -49,7 +51,10 @@ class _VideoItemState extends State<VideoItem> {
   }
 
   _notifyWhenVideoEnds() async {
-    while (_controller.value.position != _controller.value.position) {
+    while (!startPlaying) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
+    while (_controller.value.duration != _controller.value.position) {
       await Future.delayed(const Duration(seconds: 1));
     }
     widget.canChange(true);
