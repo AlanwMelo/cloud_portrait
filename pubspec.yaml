@@ -25,6 +25,7 @@ dependencies:
   video_compress: ^3.1.1
   permission_handler: ^10.2.0
   carousel_slider: ^4.1.1
+  wakelock: ^0.6.2
 
 dev_dependencies:
   flutter_test:
