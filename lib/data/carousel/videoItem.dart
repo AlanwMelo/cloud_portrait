@@ -19,13 +19,15 @@ class _VideoItemState extends State<VideoItem> {
   @override
   void initState() {
     super.initState();
-    print(widget.item.linkURL!);
     _controller = VideoPlayerController.network(widget.item.linkURL!)
       ..initialize().then((_) {
         _controller.play();
-        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
+
+        // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
       });
+
+    _notifyWhenVideoEnds();
   }
 
   @override
@@ -44,5 +46,12 @@ class _VideoItemState extends State<VideoItem> {
             )
           : Container(),
     );
+  }
+
+  _notifyWhenVideoEnds() async {
+    while (_controller.value.position != _controller.value.position) {
+      await Future.delayed(const Duration(seconds: 1));
+    }
+    widget.canChange(true);
   }
 }
