@@ -44,6 +44,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool isInRootFolder = false;
+  TextEditingController textEditingController = TextEditingController();
   NavigationController navigationController = NavigationController();
   FileUploader fileUploader = FileUploader();
   FireBaseCollectionManager firebaseCollectionManager =
@@ -132,10 +133,36 @@ class _MyHomePageState extends State<MyHomePage> {
   newButton() {
     return InkWell(
       onTap: () {
-        loadFiles();
+        showDialog(
+            context: context,
+            builder: (BuildContext ctx) {
+              return AlertDialog(
+                title: const Text("Criar pasta"),
+                content: TextField(
+                  controller: textEditingController,
+                ),
+                actions: [
+                  InkWell(
+                    onTap: () async {
+                      Navigator.of(context).pop();
+                      await firebaseCollectionManager.createCollection(
+                          collectionReference: collectionReference,
+                          newFolderName: textEditingController.text);
+                      setState(() {});
+                    },
+                    child: const Text(
+                      'Criar',
+                      style:
+                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              );
+            });
         /*firebaseCollectionManager.createCollection(
             collectionReference: collectionReference, newFolderName: 'folder');*/
       },
+      onLongPress: () {},
       child: Container(
         child: bottomBarIcons(Icons.add),
       ),
@@ -237,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> checkPermission() async {
     if (await Permission.manageExternalStorage.request().isGranted) {
-    // Either the permission was already granted before or the user just granted it.
+      // Either the permission was already granted before or the user just granted it.
     }
   }
 }
