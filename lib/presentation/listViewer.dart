@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/presentation/navigationText.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ListViewer extends StatefulWidget {
@@ -181,12 +180,22 @@ class _ListViewerState extends State<ListViewer> {
           filterQuality: FilterQuality.low,
         ),
       );
-    } else if (listItems[index].type == 'file') {
+    } else if (listItems[index].subtype == 'image') {
       return SizedBox(
         height: 120,
         width: 500,
         child: Image.network(
           listItems[index].linkURL!,
+          fit: BoxFit.cover,
+          filterQuality: FilterQuality.low,
+        ),
+      );
+    } else {
+      return SizedBox(
+        height: 120,
+        width: 500,
+        child: Image.network(
+          listItems[index].thumbnailURL!,
           fit: BoxFit.cover,
           filterQuality: FilterQuality.low,
         ),
@@ -245,18 +254,17 @@ class _ListViewerState extends State<ListViewer> {
           docPath: element.reference,
         ));
       } else {
-        {
-          listItems.add(ListItem(
-            type: 'file',
-            created: data['created'],
-            modified: data['modified'],
-            subtype: data['subtype'],
-            fileLocation: data['firestorePath'],
-            linkURL: data['fileURL'],
-            name: data['displayName'],
-            docPath: element.reference,
-          ));
-        }
+        listItems.add(ListItem(
+          type: 'file',
+          created: data['created'],
+          modified: data['modified'],
+          subtype: data['subtype'],
+          fileLocation: data['firestorePath'],
+          linkURL: data['fileURL'],
+          name: data['displayName'],
+          docPath: element.reference,
+          thumbnailURL: data['thumbnail'][0]
+        ));
       }
       setState(() {});
     }
@@ -275,6 +283,7 @@ class ListItem {
   final Timestamp? taken;
   final String? subtype;
   final String? linkURL;
+  final String? thumbnailURL;
   final DocumentReference? docPath;
   final String? fileLocation;
 
@@ -285,6 +294,7 @@ class ListItem {
     required this.created,
     this.taken,
     this.linkURL,
+    this.thumbnailURL,
     this.subtype,
     this.docPath,
     this.fileLocation,

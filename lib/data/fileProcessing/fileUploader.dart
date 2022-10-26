@@ -33,10 +33,13 @@ class FileUploader {
         Map fileInfo =
             await fileProcessor.generateLocalVideoInfo(File(file.path!));
 
-        print(fileInfo);
-
         var videoURL = await firestoreManager.uploadFileAndGetURL(
             imagePath: file.path!,
+            firestorePath:
+                '${collectionReference.path}/${fileInfo['fileName']}');
+
+        var videoThumb = await firestoreManager.uploadFileAndGetURL(
+            imagePath: fileInfo['thumbnail'].path!,
             firestorePath:
                 '${collectionReference.path}/${fileInfo['fileName']}');
 
@@ -44,7 +47,8 @@ class FileUploader {
             collectionReference: collectionReference,
             imageInfo: fileInfo,
             subtype: 'video',
-            urls: videoURL);
+            urls: videoURL,
+            thumbnail: videoThumb);
       }
     }
 

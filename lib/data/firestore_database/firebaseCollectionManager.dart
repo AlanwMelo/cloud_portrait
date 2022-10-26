@@ -19,11 +19,10 @@ class FireBaseCollectionManager {
       {required CollectionReference collectionReference,
       required Map imageInfo,
       required var urls,
-      required String subtype}) {
+      required String subtype,
+      var thumbnail}) {
     DocumentReference doc = collectionReference.doc();
 
-
-    print(imageInfo['dateTime']);
     Map<String, dynamic> data = {
       "type": "file",
       "displayName": imageInfo['fileName'],
@@ -37,6 +36,10 @@ class FireBaseCollectionManager {
       "firestorePath": urls[1],
       "fileURL": urls[0],
     };
+
+    if (thumbnail != null) {
+      data.addAll({"thumbnail": thumbnail});
+    }
 
     doc.set(data);
   }
@@ -62,13 +65,6 @@ class FireBaseCollectionManager {
   getDocs({required CollectionReference collection}) async {
     QuerySnapshot result = await collection.get();
 
-    /*print(result.docs.length);
-    result.docs.forEach((element) {
-      print(element.data());
-      print(element.id);
-    });*/
     return result;
   }
-
-  getCollectionName({required String}) {}
 }

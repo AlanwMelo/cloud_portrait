@@ -5,6 +5,7 @@ import 'package:exif/exif.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_native_image/flutter_native_image.dart';
 import 'package:flutter_video_info/flutter_video_info.dart';
+import 'package:video_compress/video_compress.dart';
 
 class FileProcessor {
   generateImageInfo(File thisFile) async {
@@ -113,12 +114,21 @@ class FileProcessor {
 
       DateTime date = DateTime.parse(info.date!);
 
+      /// Generates Thumbnail for videos
+      final thumbnailFile = await VideoCompress.getFileThumbnail(thisFile.path,
+          quality: 20, // default(100)
+          position: 0 // default(-1)
+          );
+
+      await Future.delayed(duration);
+
       log('Info generated for video: ${thisFile.path}');
       Map result = {
         "fileName": info.title,
         "videoLength": videoLength,
         "orientation": fileOrientation,
         "dateTime": date,
+        "thumbnail": thumbnailFile
       };
 
       return result;

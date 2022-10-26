@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_portrait/data/fileProcessing/fileProcessor.dart';
 import 'package:cloud_portrait/data/fileProcessing/fileUploader.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/googleSignIn.dart';
@@ -12,6 +9,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,6 +52,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    checkPermission();
     collectionReference = firebaseCollectionManager.getUserCollection();
     FirebaseAuth.instance.userChanges().listen((event) async {
       collectionReference = firebaseCollectionManager.getUserCollection();
@@ -234,6 +233,12 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {});
       }
     }).pickFiles(allowMultiple: true);
+  }
+
+  Future<void> checkPermission() async {
+    if (await Permission.manageExternalStorage.request().isGranted) {
+    // Either the permission was already granted before or the user just granted it.
+    }
   }
 }
 
