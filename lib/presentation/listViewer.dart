@@ -237,7 +237,7 @@ class _ListViewerState extends State<ListViewer> {
   _listItemImage(int index) {
     if (listItems[index].type == 'folder') {
       return SizedBox(
-        height: 120,
+        height: 110,
         child: Image.network(
           'https://i.pinimg.com/736x/76/03/5c/76035cea6383259ae8136fc2f24c339f.jpg',
           fit: BoxFit.cover,
@@ -246,7 +246,7 @@ class _ListViewerState extends State<ListViewer> {
       );
     } else if (listItems[index].subtype == 'image') {
       return SizedBox(
-        height: 120,
+        height: 110,
         width: 500,
         child: Image.network(
           listItems[index].linkURL!,
@@ -256,7 +256,7 @@ class _ListViewerState extends State<ListViewer> {
       );
     } else {
       return SizedBox(
-        height: 120,
+        height: 110,
         width: 500,
         child: Image.network(
           listItems[index].thumbnailURL!,

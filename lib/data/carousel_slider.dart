@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_portrait/data/carousel/imageItem.dart';
+import 'package:cloud_portrait/data/carousel/videoItem.dart';
 import 'package:cloud_portrait/presentation/listViewer.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:visibility_detector/visibility_detector.dart';
@@ -100,13 +101,13 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
   }
 
   _carouselChild(ListItem item) {
-    return Container(
-        width: MediaQuery.of(context).size.width,
-        margin: EdgeInsets.symmetric(horizontal: 5.0),
-        decoration: BoxDecoration(color: Colors.amber),
-        child: Text(
-          'text',
-          style: TextStyle(fontSize: 16.0),
-        ));
+    if (item.subtype == 'image') {
+      return ImageItem(
+        item: item,
+        canChange: (result) {},
+      );
+    } else {
+      return VideoItem(item: item, canChange: (result) {});
+    }
   }
 }

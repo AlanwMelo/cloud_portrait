@@ -19,7 +19,7 @@ class FileUploader {
     for (var file in files) {
       if (lookupMimeType(file.path!).toString().contains('image')) {
         Map fileInfo = await fileProcessor.generateImageInfo(File(file.path!));
-        var imgURL = await firestoreManager.uploadFileAndGetURL(
+        var imgURL = await firestoreManager.uploadImageAndGetURL(
             imagePath: file.path!,
             firestorePath:
                 '${collectionReference.path}/${fileInfo['fileName']}');
@@ -33,15 +33,15 @@ class FileUploader {
         Map fileInfo =
             await fileProcessor.generateLocalVideoInfo(File(file.path!));
 
-        var videoURL = await firestoreManager.uploadFileAndGetURL(
+        var videoURL = await firestoreManager.uploadVideoAndGetURL(
             imagePath: file.path!,
             firestorePath:
                 '${collectionReference.path}/${fileInfo['fileName']}');
 
-        var videoThumb = await firestoreManager.uploadFileAndGetURL(
+        var videoThumb = await firestoreManager.uploadImageAndGetURL(
             imagePath: fileInfo['thumbnail'].path!,
             firestorePath:
-                '${collectionReference.path}/${fileInfo['fileName']}');
+                '${collectionReference.path}/${fileInfo['fileName']}_thumb');
 
         await fireBaseCollectionManager.addFileToCollection(
             collectionReference: collectionReference,
