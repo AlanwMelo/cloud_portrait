@@ -340,7 +340,9 @@ class _ListViewerState extends State<ListViewer> {
       Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (BuildContext context) => const PortraitCarousel()));
+              builder: (BuildContext context) => PortraitCarousel(
+                    playlist: listItems,
+                  )));
     }
   }
 
@@ -353,7 +355,13 @@ class _ListViewerState extends State<ListViewer> {
       listItems = listSorter.sortByCreatedDate(
           list: listItems, separatedByType: sortByType);
     }
-    setState(() {});
+    _setStater();
+  }
+
+  _setStater() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 }
 

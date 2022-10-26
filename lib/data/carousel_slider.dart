@@ -1,22 +1,34 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_portrait/presentation/listViewer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 import 'package:wakelock/wakelock.dart';
 
+// ignore: must_be_immutable
 class PortraitCarousel extends StatefulWidget {
-  const PortraitCarousel({super.key});
+  List<ListItem>? playlist;
+
+  PortraitCarousel({super.key, this.playlist});
 
   @override
   State<StatefulWidget> createState() => _PortraitCarouselState();
 }
 
 class _PortraitCarouselState extends State<PortraitCarousel> {
+  List<ListItem> playListItems = [];
+
   @override
   void initState() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Wakelock.enable();
+
+    for (var item in widget.playlist!) {
+      if (item.type != 'folder') {
+        playListItems.add(item);
+      }
+    }
     super.initState();
   }
 
@@ -37,7 +49,7 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
         child: CarouselSlider(
           options: CarouselOptions(
               height: 400.0, enableInfiniteScroll: false, viewportFraction: 1),
-          items: [1, 2, 3, 4, 5].map((i) {
+          items: playListItems.map((item) {
             return Builder(
               builder: (BuildContext context) {
                 ValueNotifier<bool> isVisible = ValueNotifier(false);
@@ -50,28 +62,22 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
                   });
 
                   while (!result) {
-                    await Future.delayed(const Duration(seconds: 1));
+                    await Future.delayed(const Duration(milliseconds: 500));
                   }
                   return result;
                 }
 
                 return VisibilityDetector(
                   key: UniqueKey(),
+                  // Os arquivos só são carregados do firebase quando o item está completamente visivel
                   child: FutureBuilder(
                     future: visible(),
                     builder: (BuildContext context,
                         AsyncSnapshot<dynamic> snapshot) {
                       if (snapshot.hasData) {
-                        return Container(
-                            width: MediaQuery.of(context).size.width,
-                            margin: EdgeInsets.symmetric(horizontal: 5.0),
-                            decoration: BoxDecoration(color: Colors.amber),
-                            child: Text(
-                              'text $i',
-                              style: TextStyle(fontSize: 16.0),
-                            ));
+                        return _carouselChild(item);
                       } else {
-                        return Center(child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator());
                       }
                     },
                   ),
@@ -81,7 +87,7 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
                     if (visiblePercentage == 100) {
                       isVisible.value = true;
                       debugPrint(
-                          'Widget ${visibilityInfo.key} is ${visiblePercentage}% visible');
+                          'Widget ${visibilityInfo.key} is $visiblePercentage% visible');
                     }
                   },
                 );
@@ -91,5 +97,16 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
         ),
       ),
     );
+  }
+
+  _carouselChild(ListItem item) {
+    return Container(
+        width: MediaQuery.of(context).size.width,
+        margin: EdgeInsets.symmetric(horizontal: 5.0),
+        decoration: BoxDecoration(color: Colors.amber),
+        child: Text(
+          'text',
+          style: TextStyle(fontSize: 16.0),
+        ));
   }
 }

@@ -1,8 +1,5 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseUserManager.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class NavigationText extends StatefulWidget {
@@ -68,8 +65,10 @@ class _NavigationTextState extends State<NavigationText> {
 
     displayName = await firebaseUserManager.getUserDisplayName(userID);
     folders.insert(0, ['', displayName]);
-    setState(() {});
-    scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    if (mounted) {
+      setState(() {});
+      scrollController.jumpTo(scrollController.position.maxScrollExtent);
+    }
   }
 
   getListItems() async {
