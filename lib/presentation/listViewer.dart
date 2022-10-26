@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_portrait/data/carousel_slider.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/listSorter.dart';
 import 'package:cloud_portrait/presentation/navigationText.dart';
@@ -41,7 +42,7 @@ class _ListViewerState extends State<ListViewer> {
         children: [
           _path(),
           _sortAndViewMode(),
-          grid ? gridViewer() : listViewer(),
+          grid ? _gridViewer() : _listViewer(),
         ],
       ),
     );
@@ -168,7 +169,7 @@ class _ListViewerState extends State<ListViewer> {
     );
   }
 
-  gridViewer() {
+  _gridViewer() {
     return Expanded(
         child: GridView.builder(
             itemCount: listItems.length,
@@ -194,7 +195,7 @@ class _ListViewerState extends State<ListViewer> {
             }));
   }
 
-  listViewer() {
+  _listViewer() {
     return Expanded(
         child: ListView.separated(
             separatorBuilder: (BuildContext context, int index) =>
@@ -333,7 +334,14 @@ class _ListViewerState extends State<ListViewer> {
   }
 
   _listTap(int index) {
-    widget.talkback({'folder': listItems[index].docPath});
+    if (listItems[index].type == 'folder') {
+      widget.talkback({'folder': listItems[index].docPath});
+    } else {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (BuildContext context) => const PortraitCarousel()));
+    }
   }
 
   _listSort() {
