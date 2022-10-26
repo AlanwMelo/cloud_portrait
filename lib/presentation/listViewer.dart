@@ -20,6 +20,8 @@ class _ListViewerState extends State<ListViewer> {
   FireBaseCollectionManager docManager = FireBaseCollectionManager();
   late double screenWidth;
   bool grid = true;
+  bool sortType = false; //True = nome False = Data new>old
+  bool sortByType = false;
   List<ListItem> listItems = [];
 
   @override
@@ -64,7 +66,6 @@ class _ListViewerState extends State<ListViewer> {
                 if ('/'.allMatches(folderPath.path).length == 2) {
                   widget.talkback({'root': folderPath});
                 } else {
-                  print(folderPath);
                   widget.talkback({'folder': folderPath});
                 }
               }),
@@ -75,16 +76,70 @@ class _ListViewerState extends State<ListViewer> {
   }
 
   _sortAndViewMode() {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      width: screenWidth,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const SizedBox(width: 150, child: Text('Organizar por:')),
-          _changeViewMode(),
-        ],
-      ),
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
+              child: Column(
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.only(left: 8, right: 8, bottom: 1),
+                    child: Row(
+                      children: [
+                        const Text('Organizado por: '),
+                        InkWell(
+                            onTap: () {
+                              sortType = !sortType;
+                              _listSort();
+                            },
+                            child: SizedBox(
+                              width: 110,
+                              child: Text(
+                                sortType ? 'Nome' : 'Data',
+                                style: const TextStyle(color: Colors.blue),
+                              ),
+                            )),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding:
+                        const EdgeInsets.only(left: 8, right: 8, bottom: 1),
+                    child: Row(
+                      children: [
+                        const Text('Separado por: '),
+                        InkWell(
+                            onTap: () {
+                              sortByType = !sortByType;
+                              _listSort();
+                            },
+                            child: SizedBox(
+                              width: 120,
+                              child: Text(
+                                sortByType ? 'Tipo' : 'Sem separação',
+                                style: const TextStyle(color: Colors.blue),
+                              ),
+                            )),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            _changeViewMode(),
+          ],
+        ),
+        Container(
+          height: 1,
+          width: screenWidth,
+          color: Colors.grey,
+        )
+      ],
     );
   }
 
@@ -100,8 +155,14 @@ class _ListViewerState extends State<ListViewer> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               grid
-                  ? const Icon(Icons.list)
-                  : const Icon(Icons.grid_view_rounded),
+                  ? const Icon(
+                      Icons.list,
+                      size: 30,
+                    )
+                  : const Icon(
+                      Icons.grid_view_rounded,
+                      size: 30,
+                    ),
             ],
           )),
     );
@@ -268,12 +329,23 @@ class _ListViewerState extends State<ListViewer> {
       }
     }
 
-    listItems = await listSorter.sortByCreatedDate(list: listItems);
-    setState(() {});
+    _listSort();
   }
 
   _listTap(int index) {
     widget.talkback({'folder': listItems[index].docPath});
+  }
+
+  _listSort() {
+    //True = nome False = Data new>old
+    if (sortType) {
+      listItems = listSorter.sortAlphabetically(
+          list: listItems, separatedByType: sortByType);
+    } else {
+      listItems = listSorter.sortByCreatedDate(
+          list: listItems, separatedByType: sortByType);
+    }
+    setState(() {});
   }
 }
 
