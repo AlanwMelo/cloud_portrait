@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
+import 'package:cloud_portrait/data/listSorter.dart';
 import 'package:cloud_portrait/presentation/navigationText.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,7 @@ class ListViewer extends StatefulWidget {
 }
 
 class _ListViewerState extends State<ListViewer> {
+  ListSorter listSorter = ListSorter();
   FireBaseCollectionManager docManager = FireBaseCollectionManager();
   late double screenWidth;
   bool grid = true;
@@ -240,8 +242,7 @@ class _ListViewerState extends State<ListViewer> {
                 DateTime.now().millisecondsSinceEpoch),
             name: data['displayName'],
             docPath: element.reference,
-            created: Timestamp.fromMillisecondsSinceEpoch(
-                DateTime.now().millisecondsSinceEpoch)));
+            created: data['created']));
       } else if (data['subtype'] == 'image') {
         listItems.add(ListItem(
           type: 'file',
@@ -255,19 +256,20 @@ class _ListViewerState extends State<ListViewer> {
         ));
       } else {
         listItems.add(ListItem(
-          type: 'file',
-          created: data['created'],
-          modified: data['modified'],
-          subtype: data['subtype'],
-          fileLocation: data['firestorePath'],
-          linkURL: data['fileURL'],
-          name: data['displayName'],
-          docPath: element.reference,
-          thumbnailURL: data['thumbnail'][0]
-        ));
+            type: 'file',
+            created: data['created'],
+            modified: data['modified'],
+            subtype: data['subtype'],
+            fileLocation: data['firestorePath'],
+            linkURL: data['fileURL'],
+            name: data['displayName'],
+            docPath: element.reference,
+            thumbnailURL: data['thumbnail'][0]));
       }
-      setState(() {});
     }
+
+    listItems = await listSorter.sortByCreatedDate(list: listItems);
+    setState(() {});
   }
 
   _listTap(int index) {
