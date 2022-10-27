@@ -23,12 +23,13 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
   CarouselController controller = CarouselController();
   int currentIndex = 0;
   List<ListItem> playListItems = [];
-  List<ListItem> tempFolderList = [];
+  List<ListItem> foldersList = [];
   int folderIndex = 0;
+  int jumpToPage = 0;
 
   @override
   void initState() {
-    _solucaoTemporaria();
+    _loadFoldersList(widget.playlist!);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Wakelock.enable();
 
@@ -130,37 +131,40 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
 
   _nextFile(bool result) {
     if (result) {
+      // Se for o ultimo item da lista
       if (currentIndex == (playListItems.length - 1)) {
-        controller.previousPage();
+        // Se for a ultima pasta
+        if (folderIndex == (foldersList.length - 1)) {
+          jumpToPage = 0;
+          folderIndex = 0;
+        } else {
+          folderIndex = folderIndex + 1;
+          jumpToPage = 0;
+        }
+        playListItems.clear();
+        _loadCarrouselFromFolder(folderIndex);
       } else {
         controller.nextPage();
       }
     }
   }
 
-  _solucaoTemporaria() async {
-    for (var item in widget.playlist!) {
-      tempFolderList.add(item);
+  _loadFoldersList(List<ListItem> list) async {
+    for (var item in list) {
+      foldersList.add(item);
     }
-    _loadCarrouselFromFolder(currentIndex);
+    _loadCarrouselFromFolder(folderIndex);
   }
 
   _loadCarrouselFromFolder(int currentIndex) async {
     FireBaseCollectionManager collectionManager = FireBaseCollectionManager();
     QuerySnapshot result = await collectionManager.getDocs(
-        collection: tempFolderList[currentIndex].docPath?.collection('files'));
+        collection: foldersList[currentIndex].docPath?.collection('files'));
 
     for (var element in result.docs) {
       Map data = element.data() as Map;
 
       if (data['type'] == 'folder') {
-        playListItems.add(ListItem(
-            type: 'folder',
-            modified: Timestamp.fromMillisecondsSinceEpoch(
-                DateTime.now().millisecondsSinceEpoch),
-            name: data['displayName'],
-            docPath: element.reference,
-            created: data['created']));
       } else if (data['subtype'] == 'image') {
         if (data['specialIMG']) {
           playListItems.add(ListItem(
@@ -199,8 +203,8 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
             thumbnailURL: data['thumbnail'][0]));
       }
     }
-    setState(() {
-
-    });
+    playListItems.sort((a, b) => b.created.compareTo(a.created));
+    controller.jumpToPage(jumpToPage);
+    setState(() {});
   }
 }
