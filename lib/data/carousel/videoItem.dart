@@ -20,14 +20,14 @@ class _VideoItemState extends State<VideoItem> {
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.network(widget.item.linkURL!)
+    /*_controller = VideoPlayerController.network(widget.item.linkURL!)
       ..initialize().then((_) {
         _controller.play();
         startPlaying = true;
         setState(() {});
 
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
-      });
+      });*/
 
     _notifyWhenVideoEnds();
   }
@@ -40,14 +40,17 @@ class _VideoItemState extends State<VideoItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    widget.canChange(true);
+    return Container();
+    /// remoção temporaria dos videos
+    /*return Center(
       child: _controller.value.isInitialized
           ? AspectRatio(
               aspectRatio: _controller.value.aspectRatio,
               child: VideoPlayer(_controller),
             )
           : Container(),
-    );
+    );*/
   }
 
   _notifyWhenVideoEnds() async {

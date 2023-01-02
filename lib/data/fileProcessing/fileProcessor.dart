@@ -88,8 +88,6 @@ class FileProcessor {
     } catch (e) {
       log(e.toString());
     }
-
-    return true;
   }
 
   generateLocalVideoInfo(File thisFile) async {
@@ -135,7 +133,6 @@ class FileProcessor {
     } catch (e) {
       log(e.toString());
     }
-    return true;
   }
 
   _getFileOrientation(int? orientation) {

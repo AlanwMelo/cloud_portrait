@@ -5,6 +5,7 @@ import 'package:cloud_portrait/data/fileProcessing/fileProcessor.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/firestore_storage/firestoreFileManager.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:mime/mime.dart';
 
 class FileUploader {
@@ -51,6 +52,8 @@ class FileUploader {
             thumbnail: videoThumb);
       }
     }
+
+    debugPrint('----------------------------<<<>>>---------------------------- Upload Finished ----------------------------<<<>>>----------------------------');
 
     return true;
   }

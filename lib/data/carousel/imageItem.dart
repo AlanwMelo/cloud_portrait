@@ -17,7 +17,7 @@ class ImageItem extends StatefulWidget {
 
 class _ImageItemState extends State<ImageItem> {
   late Timer timer;
-  late Duration duration = const Duration(seconds: 10);
+  late Duration duration = const Duration(minutes: 2);
 
   @override
   void initState() {
