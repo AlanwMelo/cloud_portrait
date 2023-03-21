@@ -366,18 +366,18 @@ class _ListViewerState extends State<ListViewer> {
   }
 
   _listLongPress(int index) async {
+    late bool deleted;
     if (listItems[index].type == 'folder') {
-      print('pasta');
-      //widget.talkback({'folder': listItems[index].docPath});
+      deleted = await docManager.deleteFolder(
+          documentReference: listItems[index].docPath);
     } else {
-      bool deleted = await docManager.deleteFile(
+      deleted = await docManager.deleteFile(
           documentReference: listItems[index].docPath,
           filePath: listItems[index].fileLocation);
-
-      if (deleted) {
-        listItems.removeAt(index);
-        setState(() {});
-      }
+    }
+    if (deleted) {
+      listItems.removeAt(index);
+      setState(() {});
     }
   }
 

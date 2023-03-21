@@ -85,4 +85,25 @@ class FireBaseCollectionManager {
       return false;
     }
   }
+
+  deleteFolder({
+    required DocumentReference? documentReference,
+  }) async {
+    FirebaseFirestore db = FirebaseFirestore.instance;
+    CollectionReference docFiles = documentReference!.collection('files');
+    try {
+      WriteBatch batch = db.batch();
+      firestoreManager.deleteFolder(documentReference.path);
+      documentReference.delete();
+      QuerySnapshot files = await docFiles.get();
+      for (var doc in files.docs) {
+        batch.delete(doc.reference);
+      }
+      batch.commit();
+      return true;
+    } catch (e) {
+      log(e.toString());
+      return false;
+    }
+  }
 }

@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -38,36 +39,18 @@ class FirestoreManager {
   }
 
   deleteFolder(String path) async {
-    final folderRef = _storageRef.child(path);
+    final folderRef = _storageRef.child('$path/files');
     try {
-      ListResult postItems = await folderRef.list();
-      postItems.items.forEach((item) {
+      ListResult folderItems = await folderRef.list();
+      folderItems.items.forEach((item) {
         item.delete();
       });
     } catch (e) {
-      print(e);
+      log(e.toString());
     }
   }
 
   deleteFile({required String? path}) {
     _storageRef.child(path!).delete();
   }
-
-/*deleteFiles({required List<AddPhotosListItem> images, String? post}) {
-    images.forEach((image) {
-      late String path;
-
-      if (image.fromFirebase) {
-        path = 'posts/$post/${image.name}.jpg';
-      } else {
-        path = image.firebasePath!.replaceAll('/images', '');
-        path = '$path.jpg';
-      }
-      try {
-        _storageRef.child(path).delete();
-      } catch (e) {
-        print('Error on delete (firestore): $e');
-      }
-    });
-  }*/
 }
