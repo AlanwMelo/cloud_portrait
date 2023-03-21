@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/carousel_slider.dart';
-import 'package:cloud_portrait/data/fileProcessing/fileManager.dart';
+import 'package:cloud_portrait/data/fileProcessing/fileUploader.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/googleSignIn.dart';
 import 'package:cloud_portrait/data/fileProcessing/myFilePicker.dart';
@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<ListItem> openList = [];
   TextEditingController textEditingController = TextEditingController();
   NavigationController navigationController = NavigationController();
-  FileManager fileUploader = FileManager();
+  FileUploader fileUploader = FileUploader();
   FireBaseCollectionManager firebaseCollectionManager =
       FireBaseCollectionManager();
   late CollectionReference collectionReference;

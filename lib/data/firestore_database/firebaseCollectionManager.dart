@@ -1,8 +1,13 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_portrait/data/firestore_storage/firestoreFileManager.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 class FireBaseCollectionManager {
+  FirestoreManager firestoreManager = FirestoreManager();
+
   getUserCollection() {
     return FirebaseFirestore.instance
         .collection('users')
@@ -66,5 +71,18 @@ class FireBaseCollectionManager {
     QuerySnapshot? result = await collection?.get();
 
     return result;
+  }
+
+  deleteFile(
+      {required DocumentReference? documentReference,
+      required String? filePath}) {
+    try {
+      firestoreManager.deleteFile(path: filePath);
+      documentReference?.delete();
+      return true;
+    } catch (e) {
+      log(e.toString());
+      return false;
+    }
   }
 }

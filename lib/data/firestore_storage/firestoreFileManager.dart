@@ -27,7 +27,8 @@ class FirestoreManager {
 
     final imageRef = _storageRef.child(firestorePath);
     try {
-      await imageRef.putFile(File(imagePath), SettableMetadata(contentType: 'video/mp4'));
+      await imageRef.putFile(
+          File(imagePath), SettableMetadata(contentType: 'video/mp4'));
       result = [await imageRef.getDownloadURL(), imageRef.fullPath];
       debugPrint('Upload concluido');
       return result;
@@ -46,6 +47,10 @@ class FirestoreManager {
     } catch (e) {
       print(e);
     }
+  }
+
+  deleteFile({required String? path}) {
+    _storageRef.child(path!).delete();
   }
 
 /*deleteFiles({required List<AddPhotosListItem> images, String? post}) {

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/carousel_slider.dart';
+import 'package:cloud_portrait/data/fileProcessing/fileUploader.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/listSorter.dart';
 import 'package:cloud_portrait/presentation/navigationText.dart';
@@ -182,9 +183,8 @@ class _ListViewerState extends State<ListViewer> {
             ),
             itemBuilder: (BuildContext ctx, index) {
               return InkWell(
-                onTap: () {
-                  _listTap(index);
-                },
+                onTap: () => _listTap(index),
+                onLongPress: () => _listLongPress(index),
                 child: Container(
                   margin: const EdgeInsets.all(10),
                   child: Column(
@@ -362,6 +362,22 @@ class _ListViewerState extends State<ListViewer> {
                     firebasePath: widget.firebasePath,
                     playlist: listItems,
                   )));
+    }
+  }
+
+  _listLongPress(int index) async {
+    if (listItems[index].type == 'folder') {
+      print('pasta');
+      //widget.talkback({'folder': listItems[index].docPath});
+    } else {
+      bool deleted = await docManager.deleteFile(
+          documentReference: listItems[index].docPath,
+          filePath: listItems[index].fileLocation);
+
+      if (deleted) {
+        listItems.removeAt(index);
+        setState(() {});
+      }
     }
   }
 
