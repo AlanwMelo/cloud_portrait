@@ -8,7 +8,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mime/mime.dart';
 
-class FileUploader {
+class FileManager {
   FileProcessor fileProcessor = FileProcessor();
   FirestoreManager firestoreManager = FirestoreManager();
   FireBaseCollectionManager fireBaseCollectionManager =
@@ -53,7 +53,8 @@ class FileUploader {
       }
     }
 
-    debugPrint('----------------------------<<<>>>---------------------------- Upload Finished ----------------------------<<<>>>----------------------------');
+    debugPrint(
+        '----------------------------<<<>>>---------------------------- Upload Finished ----------------------------<<<>>>----------------------------');
 
     return true;
   }

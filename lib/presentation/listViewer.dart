@@ -359,6 +359,7 @@ class _ListViewerState extends State<ListViewer> {
           context,
           MaterialPageRoute(
               builder: (BuildContext context) => PortraitCarousel(
+                    firebasePath: widget.firebasePath,
                     playlist: listItems,
                   )));
     }

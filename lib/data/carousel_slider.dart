@@ -11,15 +11,17 @@ import 'package:wakelock/wakelock.dart';
 
 // ignore: must_be_immutable
 class PortraitCarousel extends StatefulWidget {
+  final CollectionReference firebasePath;
   List<ListItem>? playlist;
 
-  PortraitCarousel({super.key, this.playlist});
+  PortraitCarousel({super.key, this.playlist, required this.firebasePath});
 
   @override
   State<StatefulWidget> createState() => _PortraitCarouselState();
 }
 
 class _PortraitCarouselState extends State<PortraitCarousel> {
+  FireBaseCollectionManager docManager = FireBaseCollectionManager();
   CarouselController controller = CarouselController();
   int currentIndex = 0;
   List<ListItem> playListItems = [];
@@ -29,7 +31,8 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
 
   @override
   void initState() {
-    _loadFoldersList(widget.playlist!);
+    _reloadFolders();
+    //_loadFoldersList(widget.playlist!);
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
     Wakelock.enable();
 
@@ -129,7 +132,7 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
     }
   }
 
-  _nextFile(bool result) {
+  _nextFile(bool result) async {
     if (result) {
       // Se for o ultimo item da lista
       if (currentIndex == (playListItems.length - 1)) {
@@ -137,6 +140,7 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
         if (folderIndex == (foldersList.length - 1)) {
           jumpToPage = 0;
           folderIndex = 0;
+          await _reloadFolders();
         } else {
           folderIndex = folderIndex + 1;
           jumpToPage = 0;
@@ -154,6 +158,7 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
       foldersList.add(item);
     }
     _loadCarrouselFromFolder(folderIndex);
+    return true;
   }
 
   _loadCarrouselFromFolder(int currentIndex) async {
@@ -206,5 +211,30 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
     playListItems.sort((a, b) => b.created.compareTo(a.created));
     controller.jumpToPage(jumpToPage);
     setState(() {});
+  }
+
+  _reloadFolders() async {
+    List<ListItem> thisList = [];
+    _loadFoldersList(widget.playlist!);
+    foldersList.clear();
+    QuerySnapshot result =
+        await docManager.getDocs(collection: widget.firebasePath);
+
+    for (var element in result.docs) {
+      Map data = element.data() as Map;
+
+      if (data['type'] == 'folder') {
+        thisList.add(ListItem(
+            type: 'folder',
+            modified: Timestamp.fromMillisecondsSinceEpoch(
+                DateTime.now().millisecondsSinceEpoch),
+            name: data['displayName'],
+            docPath: element.reference,
+            created: data['created']));
+      }
+    }
+    await _loadFoldersList(thisList);
+    print(foldersList.length);
+    return true;
   }
 }
