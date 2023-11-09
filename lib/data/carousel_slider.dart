@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/carousel/imageItem.dart';
 import 'package:cloud_portrait/data/carousel/videoItem.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
+import 'package:cloud_portrait/data/listSorter.dart';
 import 'package:cloud_portrait/presentation/listViewer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +24,7 @@ class PortraitCarousel extends StatefulWidget {
 class _PortraitCarouselState extends State<PortraitCarousel> {
   FireBaseCollectionManager docManager = FireBaseCollectionManager();
   CarouselController controller = CarouselController();
+  ListSorter listSorter = ListSorter();
   int currentIndex = 0;
   List<ListItem> playListItems = [];
   List<ListItem> foldersList = [];
@@ -157,6 +159,8 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
     for (var item in list) {
       foldersList.add(item);
     }
+    foldersList = listSorter.sortAlphabetically(
+        list: foldersList, separatedByType: false);
     _loadCarrouselFromFolder(folderIndex);
     return true;
   }
@@ -208,14 +212,13 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
             thumbnailURL: data['thumbnail'][0]));
       }
     }
-    playListItems.sort((a, b) => b.created.compareTo(a.created));
+    playListItems.sort((a, b) => a.created.compareTo(b.created));
     controller.jumpToPage(jumpToPage);
     setState(() {});
   }
 
   _reloadFolders() async {
     List<ListItem> thisList = [];
-    _loadFoldersList(widget.playlist!);
     foldersList.clear();
     QuerySnapshot result =
         await docManager.getDocs(collection: widget.firebasePath);
@@ -233,8 +236,8 @@ class _PortraitCarouselState extends State<PortraitCarousel> {
             created: data['created']));
       }
     }
+
     await _loadFoldersList(thisList);
-    print(foldersList.length);
     return true;
   }
 }

@@ -53,9 +53,9 @@ class ListSorter {
           videos.add(item);
         }
       }
-      folders.sort((a, b) => b.created.compareTo(a.created));
-      images.sort((a, b) => b.created.compareTo(a.created));
-      videos.sort((a, b) => b.created.compareTo(a.created));
+      folders.sort((a, b) => a.created.compareTo(b.created));
+      images.sort((a, b) => a.created.compareTo(b.created));
+      videos.sort((a, b) => a.created.compareTo(b.created));
 
       result.addAll(folders);
       result.addAll(images);
@@ -63,7 +63,7 @@ class ListSorter {
 
       list = result;
     } else {
-      list.sort((a, b) => b.created.compareTo(a.created));
+      list.sort((a, b) => a.created.compareTo(b.created));
     }
 
     return list;

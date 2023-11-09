@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_portrait/data/carousel_slider.dart';
-import 'package:cloud_portrait/data/fileProcessing/fileUploader.dart';
 import 'package:cloud_portrait/data/firestore_database/firebaseCollectionManager.dart';
 import 'package:cloud_portrait/data/listSorter.dart';
 import 'package:cloud_portrait/presentation/navigationText.dart';
@@ -366,7 +365,7 @@ class _ListViewerState extends State<ListViewer> {
   }
 
   _listLongPress(int index) async {
-    late bool deleted;
+    /*late bool deleted;
     if (listItems[index].type == 'folder') {
       deleted = await docManager.deleteFolder(
           documentReference: listItems[index].docPath);
@@ -378,7 +377,7 @@ class _ListViewerState extends State<ListViewer> {
     if (deleted) {
       listItems.removeAt(index);
       setState(() {});
-    }
+    }*/
   }
 
   _listSort() {
